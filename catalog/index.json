@@ -19,7 +19,7 @@
       },
       "category": "development",
       "description": "Generates a Conventional Commits message by analyzing the staged git diff (git diff --cached). Use when the user asks for help writing a commit message, wants to commit staged changes, or mentions commit messages, staged diffs, or conventional commits.",
-      "homepage": "https://github.com/bvferreira/bruno-skills",
+      "homepage": "https://github.com/bruno-vferreira/bruno-skills",
       "id": "commit-message/commit-message",
       "keywords": [
         "git",
@@ -31,7 +31,7 @@
       "name": "commit-message",
       "path": "./plugins/commit-message/skills/commit-message/SKILL.md",
       "plugin": "commit-message",
-      "repository": "https://github.com/bvferreira/bruno-skills",
+      "repository": "https://github.com/bruno-vferreira/bruno-skills",
       "source": "./plugins/commit-message",
       "version": "0.1.0"
     }

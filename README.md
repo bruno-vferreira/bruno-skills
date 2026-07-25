@@ -54,7 +54,7 @@ diff.
 From this repository, hosted on GitHub:
 
 ```bash
-claude plugin marketplace add bvferreira/bruno-skills      # add the marketplace
+claude plugin marketplace add bruno-vferreira/bruno-skills # add the marketplace
 claude plugin install commit-message@bruno-skills          # install a skill
 ```
 

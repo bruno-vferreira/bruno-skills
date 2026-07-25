@@ -6,8 +6,8 @@
     "name": "Bruno Ferreira",
     "email": "bvferreira@hotmail.com"
   },
-  "homepage": "https://github.com/bvferreira/bruno-skills",
-  "repository": "https://github.com/bvferreira/bruno-skills",
+  "homepage": "https://github.com/bruno-vferreira/bruno-skills",
+  "repository": "https://github.com/bruno-vferreira/bruno-skills",
   "license": "MIT",
   "keywords": ["git", "commit", "conventional-commits", "developer-tools"]
 }
