@@ -1,0 +1,13 @@
+{
+  "name": "commit-message",
+  "description": "Generate a Conventional Commits message from the staged git diff. Use when writing commit messages or committing staged changes.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Bruno Ferreira",
+    "email": "bvferreira@hotmail.com"
+  },
+  "homepage": "https://github.com/bvferreira/bruno-skills",
+  "repository": "https://github.com/bvferreira/bruno-skills",
+  "license": "MIT",
+  "keywords": ["git", "commit", "conventional-commits", "developer-tools"]
+}
