@@ -9,13 +9,7 @@
     {
       "name": "commit-message",
       "source": "./plugins/commit-message",
-      "description": "Generate a Conventional Commits message from the staged git diff. Use when writing commit messages or committing staged changes.",
-      "version": "0.1.0",
-      "author": {
-        "name": "Bruno Ferreira",
-        "email": "bvferreira@hotmail.com"
-      },
-      "license": "MIT",
+      "description": "Generates a Conventional Commits message by analyzing the staged git diff (git diff --cached). Use when the user asks for help writing a commit message, wants to commit staged changes, or mentions commit messages, staged diffs, or conventional commits.",
       "category": "development",
       "keywords": ["git", "commit", "conventional-commits", "developer-tools"]
     }

@@ -78,15 +78,14 @@ Format: `type(scope): description`
 
 ### 6. Output
 
-Present the final message in a single fenced code block so the user can copy it, for
-example:
+Present the final message as **raw text in a single fenced code block** so the user can
+copy it verbatim — the subject alone for a simple change, or subject + blank line + body
++ footer for a fuller one (see the Examples below). Do not run the commit unless the user
+asks.
 
-```text
-git commit -m "feat(parser): support quoted CSV fields with embedded commas"
-```
-
-For a multi-line message, show the full subject + body + footer inside the block. Do not
-run the commit unless the user asks.
+To apply the message: a single-line subject can go through `git commit -m "<subject>"`;
+for a multi-line message use `git commit -F -` with a heredoc — a lone `-m` would collapse
+the body into the subject.
 
 ## Examples
 

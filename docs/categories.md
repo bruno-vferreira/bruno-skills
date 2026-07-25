@@ -26,7 +26,13 @@ each value must match a slug verbatim (lowercase, kebab-case).
 ## Rules
 
 - A skill's `category` value **must** be one of the slugs above, spelled exactly.
-- Use `tags` (free-form) for finer granularity beyond the single category.
+- **Where `category` lives:** it is declared on the plugin's entry in
+  `.claude-plugin/marketplace.json` (it is a marketplace-only field, not a `plugin.json`
+  field). Because this marketplace maps one plugin to one skill, category-per-plugin is
+  category-per-skill; the catalog index reads it from the marketplace entry.
+- Use `keywords` (free-form) for finer granularity beyond the single category. `keywords`
+  is the standard manifest field and is the single source of discovery terms — set it on
+  the plugin's marketplace entry (and, if present, keep `plugin.json` `keywords` identical).
 - Adding a new category is a deliberate change: update [`categories.json`](./categories.json)
   first (the canonical source), then regenerate this projection and update the affected
   skill metadata and the generated catalog index.
