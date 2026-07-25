@@ -15,13 +15,19 @@ browsable site later.
 .
 ├── .claude-plugin/
 │   └── marketplace.json        # the marketplace manifest (lists every plugin)
-├── plugins/
-│   └── commit-message/         # one plugin per skill
+├── plugins/                    # one folder per plugin; a plugin bundles 1+ skills
+│   ├── commit-message/
+│   │   ├── .claude-plugin/
+│   │   │   └── plugin.json      # plugin manifest (version, author, license, keywords)
+│   │   └── skills/
+│   │       └── commit-message/
+│   │           └── SKILL.md     # the skill itself (Agent Skills format)
+│   └── sdd/                     # a multi-skill plugin (8 spec-driven-development skills)
 │       ├── .claude-plugin/
-│       │   └── plugin.json      # plugin manifest (version, author, license, keywords)
+│       │   └── plugin.json
 │       └── skills/
-│           └── commit-message/
-│               └── SKILL.md     # the skill itself (Agent Skills format)
+│           └── <spec, decompose, execute-sprint, verify-sprint, review,
+│               review-and-fix, build-project, harden-skill>/SKILL.md (+ assets/)
 ├── catalog/
 │   └── index.json              # generated catalog index (do not edit by hand)
 ├── docs/
@@ -45,9 +51,12 @@ Some fields (e.g. `author`, `version`) also appear in `SKILL.md`'s `metadata` so
 skill is valid on its own under the Agent Skills standard. Those copies are a fallback —
 the canonical source in the table always wins in the generated index.
 
-The current catalog holds one example skill, **`commit-message`** — it generates a
-[Conventional Commits](https://www.conventionalcommits.org) message from the staged git
-diff.
+The catalog currently holds two plugins:
+
+- **`commit-message`** — a single skill that writes a
+  [Conventional Commits](https://www.conventionalcommits.org) message from the staged git diff.
+- **`sdd`** — Spec-Driven Development: an 8-skill methodology (spec → decompose → execute →
+  verify → review) plus the `build-project` and `review-and-fix` orchestrators.
 
 ## Install
 
