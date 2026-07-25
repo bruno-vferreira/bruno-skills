@@ -175,7 +175,7 @@ frontmatter must stay within a small YAML subset — anything else is a **hard e
 (never a silently wrong index):
 
 - one `key: value` per line; YAML block scalars (`>`/`|`, folded or literal) are
-  supported for long values;
+  supported for long values (indent the body with **spaces, not tabs**);
 - no sequences (`- item`);
 - no inline `# comments` on plain scalars (a `#` inside a block scalar is literal text);
 - only `metadata:` may hold a nested map.

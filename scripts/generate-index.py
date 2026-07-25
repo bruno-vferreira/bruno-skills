@@ -98,7 +98,10 @@ def _read_block(lines: list, i: int, path: Path) -> tuple:
 
     Returns (value, next_index). Supports folded (`>`) and literal (`|`) styles
     with optional chomping (`-` strip, `+` keep, default clip). Block content is
-    literal, so a `#` inside it is text, not a comment.
+    literal, so a `#` inside it is text, not a comment. Indentation is spaces-only
+    and auto-detected — an explicit indentation indicator (e.g. `>2`) is ignored,
+    and a folded block assumes uniform indentation (a more-indented line is folded
+    in, not kept literal). Enough for prose descriptions.
     """
     header = lines[i]
     key_indent = len(header) - len(header.lstrip(" "))
@@ -168,6 +171,9 @@ def parse_frontmatter(text: str, path: Path) -> dict:
         if not raw.strip() or raw.lstrip().startswith("#"):
             i += 1
             continue
+        lead = raw[: len(raw) - len(raw.lstrip())]
+        if "\t" in lead:  # tabs would mis-measure indentation and slip through silently
+            die(f"{rel(path)}:{lineno}: tab indentation is not allowed; use spaces")
         stripped = raw.strip()
         if stripped == "-" or stripped.startswith("- "):
             die(f"{rel(path)}:{lineno}: YAML sequences are not supported in frontmatter")
