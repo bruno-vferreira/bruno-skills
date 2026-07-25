@@ -215,7 +215,8 @@ def build_index() -> dict:
             die(f"plugin '{plugin_name}': description differs between the marketplace entry and plugin.json")
         entry_kw = entry.get("keywords")
         pj_kw = plugin_json.get("keywords")
-        if entry_kw is not None and pj_kw is not None and entry_kw != pj_kw:
+        # keywords are a set of tags — compare content, not order.
+        if entry_kw is not None and pj_kw is not None and sorted(entry_kw) != sorted(pj_kw):
             die(f"plugin '{plugin_name}': keywords differ between the marketplace entry and plugin.json")
         pj_name = plugin_json.get("name")
         if pj_name is not None and pj_name != plugin_name:
@@ -237,7 +238,10 @@ def build_index() -> dict:
 
             sk_desc = require_str(fm.get("description"), "description", skill_md)
             # One plugin maps to one skill here, so the skill's description must
-            # match the plugin's copies too (SKILL.md is canonical).
+            # match the plugin's copies too (SKILL.md is canonical). For a future
+            # multi-skill plugin this 3-way link is not enforced by design — the
+            # plugin/entry description can't equal N distinct skill descriptions,
+            # and the output always uses the canonical SKILL.md text (sk_desc).
             if len(skill_files) == 1:
                 if pj_desc is not None and sk_desc != pj_desc:
                     die(f"skill '{name}': description differs between SKILL.md and plugin.json")
