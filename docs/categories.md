@@ -1,9 +1,13 @@
 # Category Taxonomy
 
 This is the controlled vocabulary of categories for the `bruno-skills` marketplace.
-Every skill in the catalog is assigned **exactly one** `category` from this list. The
-catalog index generator and the marketplace metadata both draw from these slugs, so
-they must match verbatim (lowercase, kebab-case).
+Every skill in the catalog is assigned **exactly one** `category` from this list, and
+each value must match a slug verbatim (lowercase, kebab-case).
+
+> **Canonical source:** [`categories.json`](./categories.json) is the machine-readable
+> source of truth. The catalog index generator reads the valid slugs from that file and
+> validates each skill's `category` against it. **This Markdown file is a human-readable
+> projection** — the table below mirrors `categories.json`; edit the JSON, not the table.
 
 | Category | Description |
 |----------|-------------|
@@ -23,5 +27,6 @@ they must match verbatim (lowercase, kebab-case).
 
 - A skill's `category` value **must** be one of the slugs above, spelled exactly.
 - Use `tags` (free-form) for finer granularity beyond the single category.
-- Adding a new category is a deliberate change: update this file first, then the
-  affected skill metadata and the generated catalog index.
+- Adding a new category is a deliberate change: update [`categories.json`](./categories.json)
+  first (the canonical source), then regenerate this projection and update the affected
+  skill metadata and the generated catalog index.

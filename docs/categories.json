@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "description": "Canonical, machine-readable source of truth for the bruno-skills category taxonomy. The catalog index generator and marketplace metadata draw category slugs from this file. docs/categories.md is a human-readable projection of it.",
+  "version": "1.0",
+  "categories": [
+    { "slug": "documents", "description": "Creating, parsing, or transforming document formats (PDF, DOCX, XLSX, PPTX, and similar)." },
+    { "slug": "creative-design", "description": "Visual, artistic, or design output — image generation, layout, branding, and art." },
+    { "slug": "development", "description": "Software development support: coding, git workflows, refactoring, and build tooling." },
+    { "slug": "data", "description": "Data manipulation, analysis, transformation, querying, and pipelines." },
+    { "slug": "testing", "description": "Writing, running, or reasoning about tests and test coverage." },
+    { "slug": "devops", "description": "Infrastructure, deployment, CI/CD, containers, and operations." },
+    { "slug": "security", "description": "Security review, auditing, secrets handling, and hardening." },
+    { "slug": "productivity", "description": "Streamlining everyday personal and team workflows." },
+    { "slug": "communication", "description": "Writing, messaging, internal comms, and correspondence." },
+    { "slug": "marketing", "description": "Marketing content, copywriting, campaigns, and growth." },
+    { "slug": "meta", "description": "Skills about skills: authoring, evaluating, or managing other skills." }
+  ]
+}
