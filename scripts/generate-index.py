@@ -39,7 +39,7 @@ REPO = Path(__file__).resolve().parent.parent
 MARKETPLACE = REPO / ".claude-plugin" / "marketplace.json"
 CATEGORIES = REPO / "docs" / "categories.json"
 OUT = REPO / "catalog" / "index.json"
-GENERATOR = {"script": "scripts/generate-index.py", "version": "1.2"}
+GENERATOR = {"script": "scripts/generate-index.py", "version": "1.3"}
 
 _BLOCK_SCALAR = re.compile(r"^[>|][+-]?\d*$")  # >, |, >-, |+, |2, ...
 _INLINE_COMMENT = re.compile(r"(^|\s)#")  # a YAML comment: '#' at start or after space
@@ -206,6 +206,21 @@ def build_index() -> dict:
         author = plugin_json.get("author")
         license_ = plugin_json.get("license")
 
+        # Cross-layer consistency: the docs promise these duplicated fields stay
+        # identical across the marketplace entry and plugin.json. Enforce it here
+        # so a future edit in one place can't drift silently.
+        entry_desc = entry.get("description")
+        pj_desc = plugin_json.get("description")
+        if entry_desc is not None and pj_desc is not None and entry_desc != pj_desc:
+            die(f"plugin '{plugin_name}': description differs between the marketplace entry and plugin.json")
+        entry_kw = entry.get("keywords")
+        pj_kw = plugin_json.get("keywords")
+        if entry_kw is not None and pj_kw is not None and entry_kw != pj_kw:
+            die(f"plugin '{plugin_name}': keywords differ between the marketplace entry and plugin.json")
+        pj_name = plugin_json.get("name")
+        if pj_name is not None and pj_name != plugin_name:
+            die(f"plugin '{plugin_name}': name in plugin.json ('{pj_name}') differs from the marketplace entry name")
+
         skill_files = sorted((plugin_dir / "skills").glob("*/SKILL.md"))
         if not skill_files:
             die(f"plugin '{plugin_name}' has no skills/*/SKILL.md")
@@ -220,6 +235,15 @@ def build_index() -> dict:
             if name != skill_dir:  # Agent Skills rule: name matches the directory
                 die(f"{rel(skill_md)}: name '{name}' must match its directory '{skill_dir}'")
 
+            sk_desc = require_str(fm.get("description"), "description", skill_md)
+            # One plugin maps to one skill here, so the skill's description must
+            # match the plugin's copies too (SKILL.md is canonical).
+            if len(skill_files) == 1:
+                if pj_desc is not None and sk_desc != pj_desc:
+                    die(f"skill '{name}': description differs between SKILL.md and plugin.json")
+                if entry_desc is not None and sk_desc != entry_desc:
+                    die(f"skill '{name}': description differs between SKILL.md and the marketplace entry")
+
             eff_version = version if version is not None else meta.get("version")
             if eff_version is None:
                 die(f"skill '{name}': no version in plugin.json or SKILL.md metadata")
@@ -228,7 +252,7 @@ def build_index() -> dict:
                 "id": f"{plugin_name}/{skill_dir}",
                 "name": name,
                 "plugin": plugin_name,
-                "description": require_str(fm.get("description"), "description", skill_md),
+                "description": sk_desc,
                 "category": category,
                 "keywords": entry.get("keywords", plugin_json.get("keywords", [])),
                 "author": normalize_author(author if author is not None else meta.get("author"), skill_md),
