@@ -11,6 +11,10 @@ description: >-
   o roadmap", "divida isso em partes", "crie as sprints", "quebra isso em etapas" ou "organize as
   correções", mesmo sem a palavra "sprint". Não produz a especificação, não executa os sprints nem
   faz o review que os origina — apenas decompõe e sequencia. Aplica-se a qualquer domínio.
+license: MIT
+metadata:
+  author: Bruno Ferreira
+  version: "0.1.0"
 ---
 
 # decompose

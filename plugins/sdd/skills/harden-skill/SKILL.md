@@ -11,6 +11,10 @@ description: >-
   skill", "essa skill melhora o resultado ou é só cerimônia?". NÃO cria a skill nem afina a descrição
   (isso é da skill-creator) — complementa-a com a medição executável que ela não faz. Aplica-se a
   qualquer skill cuja saída seja verificável.
+license: MIT
+metadata:
+  author: Bruno Ferreira
+  version: "0.1.0"
 ---
 
 # harden-skill
@@ -118,7 +122,9 @@ regressão. Cada defeito que **ambos erram** é uma lacuna: ou a skill precisa e
 ```
 
 Um exemplo completo e rodável do arquétipo (entrega + prova verde + oráculo que desmascara) está em
-[`assets/exemplo-prova-auto-validante/`](assets/exemplo-prova-auto-validante/) — copie e adapte.
+[`assets/exemplo-prova-auto-validante/`](assets/exemplo-prova-auto-validante/) — copie e adapte. Um
+exemplo de relatório final (com × sem a skill, com o veredito) está em
+[`assets/exemplo-resultado.md`](assets/exemplo-resultado.md).
 
 ## Princípios
 

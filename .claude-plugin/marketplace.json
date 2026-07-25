@@ -16,7 +16,7 @@
     {
       "name": "sdd",
       "source": "./plugins/sdd",
-      "description": "SDD (Spec-Driven Development / método de sprints) para Claude Code: especificar → decompor → executar com verificação → revisar. Skills genéricas (agnósticas de tecnologia) que encodam contrato antes de implementação, fatias pequenas e verificáveis, prova em vez de sensação e parar no vermelho. Inclui as primitivas spec, decompose e execute-sprint; os gates independentes verify-sprint (conformidade) e review (qualidade), preferencialmente em subagent; e os fluxos manuais de orquestração build-project e review-and-fix.",
+      "description": "SDD (Spec-Driven Development / método de sprints) para Claude Code: especificar → decompor → executar com verificação → revisar. Skills genéricas (agnósticas de tecnologia) que encodam contrato antes de implementação, fatias pequenas e verificáveis, prova em vez de sensação e parar no vermelho. Inclui as primitivas spec, decompose e execute-sprint; os gates independentes verify-sprint (conformidade) e review (qualidade), preferencialmente em subagent; os fluxos manuais de orquestração build-project e review-and-fix; e a skill de medição executável harden-skill, que constrói um eval e mede o ganho real de uma skill sobre um baseline.",
       "category": "development",
       "keywords": ["sprints", "spec", "spec-driven-development", "sdd", "decompose", "code-review", "verification", "workflow", "orchestration", "metodologia", "pt-br"]
     }

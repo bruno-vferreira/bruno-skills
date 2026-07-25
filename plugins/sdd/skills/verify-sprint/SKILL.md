@@ -11,6 +11,10 @@ description: >-
   "posso fechar/commitar isto?", ou "quero um segundo portão independente sobre
   escopo/restrições/entregável". NÃO é code review (bugs/lógica), NÃO valida deploy nem o plano do
   sprint, NÃO corrige — só julga aderência ao combinado, em qualquer domínio.
+license: MIT
+metadata:
+  author: Bruno Ferreira
+  version: "0.1.0"
 ---
 
 # verify-sprint

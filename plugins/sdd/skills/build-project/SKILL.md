@@ -11,6 +11,10 @@ description: >-
   `/build-project`; o modelo NUNCA a dispara sozinho ao interpretar uma conversa. Orquestra as
   primitivas, não as reimplementa. Não corrige achados de review (isso é o fluxo `review-and-fix`).
   Aplica-se a qualquer domínio.
+license: MIT
+metadata:
+  author: Bruno Ferreira
+  version: "0.1.0"
 ---
 
 # build-project

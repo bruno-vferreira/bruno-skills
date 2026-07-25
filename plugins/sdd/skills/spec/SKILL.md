@@ -11,6 +11,10 @@ description: >-
   skill é conversacional: confirma o entendimento passo a passo, registra decisões com o racional,
   caça lacunas e consolida um documento de especificação estável. NÃO escreve código, não planeja
   execução e não decompõe em sprints — isso é da `decompose`.
+license: MIT
+metadata:
+  author: Bruno Ferreira
+  version: "0.1.0"
 ---
 
 # spec

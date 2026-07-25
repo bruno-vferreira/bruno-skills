@@ -56,7 +56,9 @@ The catalog currently holds two plugins:
 - **`commit-message`** — a single skill that writes a
   [Conventional Commits](https://www.conventionalcommits.org) message from the staged git diff.
 - **`sdd`** — Spec-Driven Development: an 8-skill methodology (spec → decompose → execute →
-  verify → review) plus the `build-project` and `review-and-fix` orchestrators.
+  verify → review), the `build-project` and `review-and-fix` orchestrators, and the
+  `harden-skill` eval builder. Once installed, its commands are namespaced as
+  `/sdd:<skill>` (e.g. `/sdd:build-project`); the skills also trigger from natural language.
 
 ## Install
 

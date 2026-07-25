@@ -12,6 +12,10 @@ description: >-
   explicitamente com `/review-and-fix`; o modelo NUNCA a dispara sozinho ao interpretar uma conversa
   ou um pedido de "dá uma revisada". A primitiva `review` sozinha continua auto-invocável para uma
   auditoria pontual; é o ciclo COMPLETO com correções que é deliberado. Aplica-se a qualquer domínio.
+license: MIT
+metadata:
+  author: Bruno Ferreira
+  version: "0.1.0"
 ---
 
 # review-and-fix

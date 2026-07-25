@@ -12,6 +12,10 @@ description: >-
   ser implementado. Não corrige os achados nem verifica conformidade ao que o sprint pediu (isso é
   da verify-sprint); aqui se julga qualidade. Preferencialmente executada em subagent. Aplica-se a
   qualquer domínio.
+license: MIT
+metadata:
+  author: Bruno Ferreira
+  version: "0.1.0"
 ---
 
 # review

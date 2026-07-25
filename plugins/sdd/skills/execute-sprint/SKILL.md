@@ -8,6 +8,10 @@ description: >-
   tarefas com escopo e critério de aceite definidos — mesmo que ele não diga a palavra "sprint".
   Aplica-se a qualquer domínio (código, infraestrutura, documentação, dados). Aplica-se também a
   sprints de correção originados de code review.
+license: MIT
+metadata:
+  author: Bruno Ferreira
+  version: "0.1.0"
 ---
 
 # execute-sprint
