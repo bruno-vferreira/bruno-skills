@@ -1,0 +1,37 @@
+{
+  "generator": {
+    "script": "scripts/generate-index.py",
+    "version": "1.0"
+  },
+  "marketplace": {
+    "description": "A personal, standards-faithful marketplace of Agent Skills for Claude Code.",
+    "name": "bruno-skills",
+    "owner": {
+      "email": "bvferreira@hotmail.com",
+      "name": "Bruno Ferreira"
+    }
+  },
+  "skills": [
+    {
+      "author": {
+        "email": "bvferreira@hotmail.com",
+        "name": "Bruno Ferreira"
+      },
+      "category": "development",
+      "description": "Generates a Conventional Commits message by analyzing the staged git diff (git diff --cached). Use when the user asks for help writing a commit message, wants to commit staged changes, or mentions commit messages, staged diffs, or conventional commits.",
+      "homepage": "https://github.com/bvferreira/bruno-skills",
+      "keywords": [
+        "git",
+        "commit",
+        "conventional-commits",
+        "developer-tools"
+      ],
+      "license": "MIT",
+      "name": "commit-message",
+      "plugin": "commit-message",
+      "repository": "https://github.com/bvferreira/bruno-skills",
+      "source": "./plugins/commit-message",
+      "version": "0.1.0"
+    }
+  ]
+}
