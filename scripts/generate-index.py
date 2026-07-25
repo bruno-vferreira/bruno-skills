@@ -17,8 +17,9 @@ Canonical sources (do not guess — read them):
 
 Accepted SKILL.md frontmatter (kept deliberately small — the parser rejects,
 loudly, anything it cannot model rather than mangling it silently):
-  - one `key: scalar` per line; no YAML block scalars (`>`, `|`); no sequences
-    (`- item`); no inline `# comments`; only `metadata:` may hold a nested map.
+  - one `key: value` per line; YAML block scalars (`>`/`|`, folded or literal)
+    are supported for long values; no sequences (`- item`); no inline `# comments`
+    on plain scalars; only `metadata:` may hold a nested map.
 Anything outside this is a hard error, so a stale OR malformed index both fail.
 
 Category values are validated against docs/categories.json (the canonical
@@ -39,7 +40,7 @@ REPO = Path(__file__).resolve().parent.parent
 MARKETPLACE = REPO / ".claude-plugin" / "marketplace.json"
 CATEGORIES = REPO / "docs" / "categories.json"
 OUT = REPO / "catalog" / "index.json"
-GENERATOR = {"script": "scripts/generate-index.py", "version": "1.3"}
+GENERATOR = {"script": "scripts/generate-index.py", "version": "1.4"}
 
 _BLOCK_SCALAR = re.compile(r"^[>|][+-]?\d*$")  # >, |, >-, |+, |2, ...
 _INLINE_COMMENT = re.compile(r"(^|\s)#")  # a YAML comment: '#' at start or after space
@@ -92,35 +93,99 @@ def _scalar(value: str, path: Path, lineno: int) -> str:
     return _strip_quotes(value)
 
 
+def _read_block(lines: list, i: int, path: Path) -> tuple:
+    """Read a YAML block scalar whose header (`key: >` / `key: |`) is at line `i`.
+
+    Returns (value, next_index). Supports folded (`>`) and literal (`|`) styles
+    with optional chomping (`-` strip, `+` keep, default clip). Block content is
+    literal, so a `#` inside it is text, not a comment.
+    """
+    header = lines[i]
+    key_indent = len(header) - len(header.lstrip(" "))
+    indicator = header.split(":", 1)[1].strip()
+    style = indicator[0]  # '>' folded, '|' literal
+    chomp = next((c for c in indicator[1:] if c in "+-"), "")
+
+    body: list = []
+    j = i + 1
+    while j < len(lines):
+        ln = lines[j]
+        if ln.strip() == "":
+            body.append("")
+            j += 1
+            continue
+        if (len(ln) - len(ln.lstrip(" "))) <= key_indent:
+            break  # a line indented no more than the key ends the block
+        body.append(ln)
+        j += 1
+
+    non_blank = [ln for ln in body if ln.strip()]
+    if not non_blank:
+        return "", j
+    block_indent = min(len(ln) - len(ln.lstrip(" ")) for ln in non_blank)
+    dedented = ["" if ln.strip() == "" else ln[block_indent:] for ln in body]
+
+    if style == "|":  # literal: keep line breaks
+        value = "\n".join(dedented)
+    else:  # folded: joins wrapped lines with a space; a blank line becomes a newline
+        parts: list = []
+        prev_blank = True
+        for ln in dedented:
+            if ln == "":
+                parts.append("\n")
+                prev_blank = True
+            else:
+                if parts and not prev_blank:
+                    parts.append(" ")
+                parts.append(ln)
+                prev_blank = False
+        value = "".join(parts)
+
+    if chomp != "+":  # strip ('-') and clip (default) both drop trailing newlines here
+        value = value.rstrip("\n")
+    return value, j
+
+
 def parse_frontmatter(text: str, path: Path) -> dict:
     """Parse the small YAML subset SKILL.md frontmatter is allowed to use.
 
-    Supports top-level `key: scalar` and a single nested `metadata:` map of
-    `  key: scalar` pairs. Rejects (hard error) block scalars, sequences, and
-    stray indentation — so an author who writes an unsupported construct gets a
-    clear failure instead of a silently wrong index.
+    Supports top-level `key: scalar`, YAML block scalars (`>`/`|`, folded or
+    literal, with chomping), and a single nested `metadata:` map of `  key: scalar`
+    pairs. Rejects (hard error) sequences, inline `#` comments on plain scalars,
+    and stray indentation — so an author who writes an unsupported construct gets
+    a clear failure instead of a silently wrong index.
     """
     m = re.match(r"^---\n(.*?)\n---", text, re.S)
     if not m:
         die(f"no YAML frontmatter found in {rel(path)}")
+    lines = m.group(1).splitlines()
     data: dict = {}
     current_key = None  # the top-level mapping key we're nested under
-    for lineno, raw in enumerate(m.group(1).splitlines(), 1):
+    i = 0
+    while i < len(lines):
+        raw = lines[i]
+        lineno = i + 1
         if not raw.strip() or raw.lstrip().startswith("#"):
+            i += 1
             continue
         stripped = raw.strip()
         if stripped == "-" or stripped.startswith("- "):
             die(f"{rel(path)}:{lineno}: YAML sequences are not supported in frontmatter")
-        if raw[0] in " \t":  # nested line
+        if raw[0] in " \t":  # nested line (under metadata)
             if current_key is None or not isinstance(data.get(current_key), dict):
                 die(
                     f"{rel(path)}:{lineno}: unexpected indented line — only 'metadata:' "
-                    f"may hold a nested map, and multi-line values are not supported: {raw!r}"
+                    f"may hold a nested map: {raw!r}"
                 )
             key, sep, val = stripped.partition(":")
             if not sep:
                 die(f"{rel(path)}:{lineno}: malformed frontmatter line: {raw!r}")
-            data[current_key][key.strip()] = _scalar(val.strip(), path, lineno)
+            val = val.strip()
+            if _BLOCK_SCALAR.match(val):
+                data[current_key][key.strip()], i = _read_block(lines, i, path)
+            else:
+                data[current_key][key.strip()] = _scalar(val, path, lineno)
+                i += 1
             continue
         key, sep, val = raw.partition(":")
         if not sep:
@@ -133,14 +198,14 @@ def parse_frontmatter(text: str, path: Path) -> dict:
             else:
                 data[key] = ""  # empty scalar; required-field checks catch this later
                 current_key = None
+            i += 1
         elif _BLOCK_SCALAR.match(val):
-            die(
-                f"{rel(path)}:{lineno}: block scalars ('{val}') are not supported; "
-                f"keep '{key}' on a single line"
-            )
+            data[key], i = _read_block(lines, i, path)
+            current_key = None
         else:
             data[key] = _scalar(val, path, lineno)
             current_key = None
+            i += 1
     return data
 
 

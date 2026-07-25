@@ -174,9 +174,10 @@ The generator ships a small hand-rolled parser (no external dependencies), so `S
 frontmatter must stay within a small YAML subset — anything else is a **hard error**
 (never a silently wrong index):
 
-- one `key: value` per line — no YAML block scalars (`>` or `|`);
+- one `key: value` per line; YAML block scalars (`>`/`|`, folded or literal) are
+  supported for long values;
 - no sequences (`- item`);
-- no inline `# comments`;
+- no inline `# comments` on plain scalars (a `#` inside a block scalar is literal text);
 - only `metadata:` may hold a nested map.
 
 Requires **Python 3.7+**. No third-party packages.
