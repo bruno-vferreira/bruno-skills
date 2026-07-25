@@ -1,0 +1,26 @@
+{
+  "name": "sdd",
+  "displayName": "SDD — Spec-Driven Development",
+  "description": "SDD (Spec-Driven Development / método de sprints) para Claude Code: especificar → decompor → executar com verificação → revisar. Skills genéricas (agnósticas de tecnologia) que encodam contrato antes de implementação, fatias pequenas e verificáveis, prova em vez de sensação e parar no vermelho. Inclui as primitivas spec, decompose e execute-sprint; os gates independentes verify-sprint (conformidade) e review (qualidade), preferencialmente em subagent; e os fluxos manuais de orquestração build-project e review-and-fix.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Bruno Ferreira",
+    "email": "bvferreira@hotmail.com"
+  },
+  "homepage": "https://github.com/bruno-vferreira/bruno-skills",
+  "repository": "https://github.com/bruno-vferreira/bruno-skills",
+  "license": "MIT",
+  "keywords": [
+    "sprints",
+    "spec",
+    "spec-driven-development",
+    "sdd",
+    "decompose",
+    "code-review",
+    "verification",
+    "workflow",
+    "orchestration",
+    "metodologia",
+    "pt-br"
+  ]
+}
