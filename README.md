@@ -156,7 +156,7 @@ Say you're adding a skill called `my-skill`.
 
 ```bash
 claude plugin validate .                          # marketplace + every local plugin
-claude plugin validate ./plugins/commit-message   # a single plugin (add --strict for CI)
+claude plugin validate ./plugins/commit-message   # a single plugin (add --strict to fail on warnings)
 python3 scripts/generate-index.py --check         # index is fresh AND frontmatter is well-formed
 ```
 
