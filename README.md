@@ -41,6 +41,10 @@ browsable site later.
 | `category`, `keywords` | the plugin's entry in `marketplace.json` |
 | `homepage`, `repository` | the plugin's `plugin.json` (optional) |
 
+Some fields (e.g. `author`, `version`) also appear in `SKILL.md`'s `metadata` so the
+skill is valid on its own under the Agent Skills standard. Those copies are a fallback —
+the canonical source in the table always wins in the generated index.
+
 The current catalog holds one example skill, **`commit-message`** — it generates a
 [Conventional Commits](https://www.conventionalcommits.org) message from the staged git
 diff.

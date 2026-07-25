@@ -39,9 +39,10 @@ REPO = Path(__file__).resolve().parent.parent
 MARKETPLACE = REPO / ".claude-plugin" / "marketplace.json"
 CATEGORIES = REPO / "docs" / "categories.json"
 OUT = REPO / "catalog" / "index.json"
-GENERATOR = {"script": "scripts/generate-index.py", "version": "1.1"}
+GENERATOR = {"script": "scripts/generate-index.py", "version": "1.2"}
 
 _BLOCK_SCALAR = re.compile(r"^[>|][+-]?\d*$")  # >, |, >-, |+, |2, ...
+_INLINE_COMMENT = re.compile(r"(^|\s)#")  # a YAML comment: '#' at start or after space
 
 
 def rel(path: Path) -> str:
@@ -75,6 +76,22 @@ def _strip_quotes(value: str) -> str:
     return value
 
 
+def _scalar(value: str, path: Path, lineno: int) -> str:
+    """Strip quotes; reject an unquoted inline `# comment` rather than absorbing it.
+
+    A quoted scalar keeps its contents verbatim (a literal `#` is fine inside
+    quotes). Unquoted, a `#` at the start or after whitespace is a YAML comment —
+    keeping it would silently pollute the value, so it is a hard error.
+    """
+    quoted = len(value) >= 2 and value[0] == value[-1] and value[0] in "\"'"
+    if not quoted and _INLINE_COMMENT.search(value):
+        die(
+            f"{rel(path)}:{lineno}: inline '#' comments are not supported; "
+            f"quote the value or remove the comment"
+        )
+    return _strip_quotes(value)
+
+
 def parse_frontmatter(text: str, path: Path) -> dict:
     """Parse the small YAML subset SKILL.md frontmatter is allowed to use.
 
@@ -103,22 +120,26 @@ def parse_frontmatter(text: str, path: Path) -> dict:
             key, sep, val = stripped.partition(":")
             if not sep:
                 die(f"{rel(path)}:{lineno}: malformed frontmatter line: {raw!r}")
-            data[current_key][key.strip()] = _strip_quotes(val.strip())
+            data[current_key][key.strip()] = _scalar(val.strip(), path, lineno)
             continue
         key, sep, val = raw.partition(":")
         if not sep:
             die(f"{rel(path)}:{lineno}: malformed frontmatter line: {raw!r}")
         key, val = key.strip(), val.strip()
         if val == "":
-            data[key] = {}
-            current_key = key
+            if key == "metadata":  # the only frontmatter field that is a nested map
+                data[key] = {}
+                current_key = key
+            else:
+                data[key] = ""  # empty scalar; required-field checks catch this later
+                current_key = None
         elif _BLOCK_SCALAR.match(val):
             die(
                 f"{rel(path)}:{lineno}: block scalars ('{val}') are not supported; "
                 f"keep '{key}' on a single line"
             )
         else:
-            data[key] = _strip_quotes(val)
+            data[key] = _scalar(val, path, lineno)
             current_key = None
     return data
 
