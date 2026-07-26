@@ -475,17 +475,26 @@ def cmd_finalize(root: Path, rebuild: bool, user_id: str, user_nickname: str) ->
 # --------------------------------------------------------------------------- #
 def main(argv: list) -> int:
     parser = argparse.ArgumentParser(prog="plaud_sync", description="Plaud sync engine")
+    # --root is accepted both before and after the subcommand (git-style or
+    # modern-style). The main parser supplies the default; subparsers use
+    # SUPPRESS so an absent --root after the subcommand doesn't clobber a value
+    # given before it.
     parser.add_argument("--root", default=".", help="project dir holding .plaud/ (default: cwd)")
     sub = parser.add_subparsers(dest="cmd", required=True)
-    sub.add_parser("diff", help="list_files JSON on stdin -> ids needing sync")
-    sub.add_parser("save", help="get_file JSON on stdin -> write note + audio + checkpoint")
+
+    def add_root(p):
+        p.add_argument("--root", default=argparse.SUPPRESS, help="project dir holding .plaud/ (default: cwd)")
+
+    add_root(sub.add_parser("diff", help="list_files JSON on stdin -> ids needing sync"))
+    add_root(sub.add_parser("save", help="get_file JSON on stdin -> write note + audio + checkpoint"))
     fin = sub.add_parser("finalize", help="update checkpoint top-level fields")
+    add_root(fin)
     fin.add_argument("--rebuild", action="store_true", help="prune records with no folder on disk")
     fin.add_argument("--user-id", default="")
     fin.add_argument("--user-nickname", default="")
 
     args = parser.parse_args(argv)
-    root = Path(args.root).resolve()
+    root = Path(getattr(args, "root", ".")).resolve()
 
     if args.cmd == "diff":
         return cmd_diff(root)

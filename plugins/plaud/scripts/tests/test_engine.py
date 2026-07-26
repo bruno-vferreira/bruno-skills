@@ -49,6 +49,12 @@ def main() -> int:
     comp = subprocess.run([sys.executable, "-m", "py_compile", str(ENGINE)], capture_output=True)
     check(comp.returncode == 0, "engine compiles (py_compile)")
 
+    # --root accepted both before and after the subcommand (model may use either)
+    with tempfile.TemporaryDirectory() as tmp:
+        before = run(["--root", tmp, "diff"], FIX_LIST)
+        after = run(["diff", "--root", tmp], FIX_LIST)
+        check(before.returncode == 0 and after.returncode == 0, "--root works before and after the subcommand")
+
     with tempfile.TemporaryDirectory() as tmp:
         root = Path(tmp)
 
