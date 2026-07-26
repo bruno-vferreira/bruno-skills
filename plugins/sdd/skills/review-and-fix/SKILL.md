@@ -15,233 +15,143 @@ description: >-
 license: MIT
 metadata:
   author: Bruno Ferreira
-  version: "0.1.0"
+  version: "0.2.0"
 ---
 
 # review-and-fix
 
-Esta skill conduz o ciclo **revisar → corrigir** de um corpo de trabalho **que já existe**: audita o
-repositório (ou uma área dele), transforma os achados em **sprints de correção** e executa cada
-correção com verificação, fechando com uma nova checagem. É o **fluxo macro do endurecimento** —
-aplicado a algo que já foi construído e precisa ficar mais robusto, em vez de erguido do zero.
+Conduz o ciclo **revisar → corrigir** de um corpo de trabalho que já existe: audita o repositório
+(ou uma área dele), transforma os achados em **sprints de correção** e executa cada correção com
+verificação, fechando com uma nova checagem. Fluxo macro do **endurecimento** — aplicado ao que já
+foi construído e precisa ficar mais robusto, não ao que está sendo erguido do zero.
 
-Ela **orquestra, não reimplementa**: cada fase é uma **chamada à primitiva correspondente**
-(`review`, `decompose`, `execute-sprint`, `verify-sprint`). O valor desta skill não está em fazer o
-trabalho de nenhuma etapa, e sim em **sequenciá-las com rigor**, inserir os **pontos de controle
-humano** nos lugares certos e **parar no vermelho** em vez de seguir por cima de uma correção que
+Orquestra, não reimplementa: cada fase é chamada à primitiva correspondente (`review`, `decompose`,
+`execute-sprint`, `verify-sprint`). O valor está em sequenciar com rigor, inserir os pontos de
+controle humano nos lugares certos, e **parar no vermelho** em vez de seguir sobre uma correção que
 não fechou.
 
-É **genérica**: não conhece linguagens, frameworks ou ferramentas. Os comandos concretos (como
-validar, como commitar, como provar que um bug sumiu) vivem no `CLAUDE.md` do projeto e são
-responsabilidade das primitivas — esta skill só decide **qual etapa vem agora** e **se é seguro
-avançar**.
+Genérica: comandos concretos (validar, commitar, provar que um bug sumiu) vivem no `CLAUDE.md` do
+projeto e são responsabilidade das primitivas — esta skill só decide qual etapa vem agora e se é
+seguro avançar.
 
-## Por que o disparo é manual (decisão de arquitetura)
+## Por que o disparo é manual
 
-Esta skill tem **`disable-model-invocation: true`** no frontmatter: ela **só** roda quando o usuário
-a chama explicitamente com `/review-and-fix`. Isso é deliberado.
-
-Iniciar um ciclo completo de revisão-e-correção é uma ação de **alto impacto e longa duração** —
-mexe em código, cria commits, gasta tempo e contexto. O **controle do início é do usuário**, não uma
-decisão que o modelo deva tomar sozinho ao interpretar uma frase como "acho que esse módulo tá meio
-frágil" ou "dá uma olhada nesse código aí". A primitiva **`review` continua auto-invocável** — o
-modelo pode auditar sob demanda e devolver um relatório de achados; é o **ciclo completo com
-correções** (que decompõe os achados em sprints e mexe no código para consertá-los) que é
-deliberado. Se você é o modelo e está lendo isto fora de um `/review-and-fix` explícito, **não
-inicie o fluxo** — no máximo, faça a revisão pontual pedida (via `review`) e sugira que o usuário
-rode `/review-and-fix` quando quiser conduzir o ciclo inteiro de correção.
+`disable-model-invocation: true` é deliberado: um ciclo completo de revisão-e-correção mexe em
+código, cria commits, consome tempo — o início é decisão do usuário, nunca inferida de "esse módulo
+tá meio frágil" ou "dá uma olhada nesse código aí". A primitiva `review` continua auto-invocável
+para auditoria pontual; é o ciclo completo com correções que exige `/review-and-fix` explícito.
 
 ## Pré-condições
 
-Antes de orquestrar, confirme que existe:
+- Skills primitivas disponíveis: `review`, `decompose`, `execute-sprint`, `verify-sprint`
+  (idealmente no mesmo plugin).
+- Corpo de trabalho existente sob controle de versão — checkpoints commitam por correção.
 
-- **As skills primitivas disponíveis** — `review`, `decompose`, `execute-sprint` e `verify-sprint`.
-  Esta skill as chama; se alguma faltar, a fase correspondente não tem como rodar. (O ideal é que
-  estejam empacotadas juntas no mesmo **plugin**.)
-- **Um corpo de trabalho existente sob controle de versão** — o ciclo audita algo que **já existe** e
-  os checkpoints **commitam por correção**. Sem versão, não há como isolar uma correção nem voltar
-  atrás quando um gate reprova ou um mini review acha regressão.
+Se `/review-and-fix` foi chamado sem indicar o alvo, pergunte o que revisar (repo inteiro ou área
+específica) antes de disparar a primeira fase — não presuma o escopo.
 
-Se o usuário chamou `/review-and-fix` sem indicar o alvo, tudo bem: pergunte **o que revisar** (o
-repositório inteiro ou uma área específica) antes de disparar a primeira fase. Não presuma o escopo.
+## Procedimento
 
-## Procedimento (a orquestração)
-
-Siga as fases em ordem. Cada uma é uma **chamada à primitiva**, com o seu "porquê" para você julgar
-bem quando o caso real fugir do roteiro. O princípio que atravessa tudo: **falha para o fluxo;
-sucesso avança**.
-
-### 1. Revisar — invocar `review` em escopo completo
-
-Invoque a `review` sobre o **alvo indicado** (o repositório inteiro ou a área que o usuário apontou),
-preferencialmente **em subagent**, para produzir o **relatório de achados priorizados** — cada
-achado com arquivo, cenário de falha concreto e correção sugerida, ordenados por severidade.
-
-Esta é a fase de **diagnóstico**: aqui não se corrige nada, só se levanta o que está errado. Se a
-`review` **não achar nada relevante**, o ciclo termina aqui — reporte "nada a corrigir" em vez de
-inventar correções para justificar o fluxo.
-
-### 2. Apresentar os achados ao usuário — ponto de controle humano
-
-O relatório de achados é um **ponto de decisão humana**, não uma lista de ordens de serviço
-automáticas. **Apresente os achados ao usuário e espere a confirmação de quais corrigir.** O usuário:
-
-- **confirma** quais achados viram correção agora,
-- **ajusta prioridades** (a ordem da `review` é uma sugestão, não um decreto),
-- pode **adiar** achados para "fases futuras" — nem todo achado precisa virar correção imediata.
-
-Só os achados **aprovados** seguem para a decomposição. Adiar um achado é uma decisão legítima do
-usuário: registre-o como "fase futura" e **não o transforme em sprint** agora. Fechar essa lista pelo
-seu julgamento — corrigir tudo que a `review` apontou sem passar pelo usuário — é atropelar o
-controle humano que esta fase existe para garantir.
-
-### 3. Decompor — invocar `decompose` (um sprint de correção por achado)
-
-Com os achados aprovados, invoque a `decompose` sobre eles para gerar os **sprints de correção**:
-**um sprint por achado**. A decomposição os ordena com **justificativa** (severidade +
-dependências + vitória rápida) e dá a cada um um **entregável verificável** — a **prova de
-correção**: a evidência objetiva de que **aquele bug específico sumiu**.
-
-**Um achado, um sprint** é deliberado: correções isoladas dão **checkpoint limpo** e **rollback
-fácil**. Amontoar vários achados num sprint só embaralha a prova (qual correção quebrou o quê?) e
-tira o isolamento que torna cada fix reversível sozinho.
-
-### 4. Confirmar o plano com o usuário
-
-Antes de executar qualquer correção, **apresente o plano de sprints de correção ao usuário e espere
-aprovação**. Este é o **segundo ponto de controle humano**: o usuário aprova, reordena ou ajusta o
-escopo das correções. É o último momento barato para corrigir o rumo — depois daqui começa a mexer
-no código. Não pule este checkpoint "para ganhar tempo".
-
-### 5. Loop de correção — um sprint por vez
-
-Para cada sprint de correção, na ordem do plano, execute **este ciclo completo** antes de olhar o
-próximo. A ordem interna importa: **conformidade antes de qualidade**.
-
-1. **Executar — `execute-sprint`.** Invoque a `execute-sprint` para a próxima correção. Ela planeja,
-   implementa **apenas o escopo daquela correção**, valida o entregável (a prova de que o bug sumiu)
-   e commita.
-
-2. **Gate de conformidade — `verify-sprint` (subagent independente).** Invoque a `verify-sprint`
-   para julgar, **independente do executor**, se a correção entregue corresponde ao que o sprint de
-   correção **definiu** — inclusive se a **prova exigida** ("o bug X sumiu") foi de fato produzida e
-   **testa a coisa certa**, e não uma prova adjacente que passa sem exercitar o bug. É um **GATE**:
-   - **CONFORME** → libera a etapa seguinte.
-   - **NÃO CONFORME** ou **PARCIAL** → **pare e reporte**. Não avance, não feche a correção, não siga
-     para o mini review. O gate reprovar é sinal de que a entrega desviou do combinado — ou a prova
-     não prova o que devia. Seguir por cima disso propaga o desvio.
-
-   Por que **antes** do mini review: uma correção pode estar bem-feita e ainda assim **não provar**
-   que o bug sumiu. Verificar aderência primeiro evita gastar uma revisão de qualidade em algo que já
-   está fora do combinado.
-
-3. **Mini review — `review` em escopo pequeno.** Passado o gate, invoque a `review` sobre **apenas o
-   diff daquela correção** (não o repo inteiro) para confirmar duas coisas: **(a)** que o bug de fato
-   **sumiu** e **(b)** que **nada foi quebrado em volta** — que a correção não introduziu regressão
-   no código adjacente. Este segundo ponto é o coração do ciclo de endurecimento: corrigir A e
-   quebrar B silenciosamente é um retrocesso, não um progresso.
-
-4. **Checkpoint.** Se a **execução**, o **gate** ou o **mini review** revelarem falha — inclusive uma
-   **regressão** detectada pelo mini review —, **pare e reporte** ao usuário; **não avance
-   automaticamente** para a próxima correção. Se tudo passou, siga para a próxima — idealmente com
-   **contexto limpo** entre sprints (o que uma correção precisa saber está no seu prompt e no estado
-   commitado, não na memória de conversa da anterior).
-
-### 6. Fechamento verificado
-
-**Não declare "resolvido" pela sensação.** Ao final, confirme, com prova:
-
-- que **cada achado endereçado foi de fato corrigido** — a prova por sprint (o bug X sumiu) foi
-  produzida e **re-executada do estado limpo**, não só relatada como verde,
-- o **estado do repositório** (todas as correções commitadas, nada pela metade),
-- as **checagens do projeto** (o que o `CLAUDE.md`/regras exigem),
-- que **nada em volta regrediu** — um smoke do fluxo que essas correções tocam, de ponta a ponta,
-  confirmando que endurecer um ponto não quebrou outro.
-
-**Prova está no artefato, não na nota**: um achado só está fechado quando a correção está **no código
-entregue** e a prova de que o bug sumiu foi **re-executada** — não quando um commit *diz* que
-corrigiu. Cuidado com o "todas as correções verdes, pode fechar" quando a re-execução da prova não
-aconteceu de fato.
-
-O fechamento honesto é: "os achados A, B, C foram corrigidos e verificados (prova por sprint); os
-achados D, E ficaram para fases futuras a seu pedido" — não um "acho que tá tudo resolvido". Se a
-correção **fez novas questões surgirem** (um fix que revela outro problema), elas podem **originar
-outro ciclo** — mas isso é uma nova rodada de `/review-and-fix`, não algo a emendar silenciosamente
-neste fechamento.
-
-## Formato de saída (painel de orquestração)
-
-Conduza o fluxo mantendo o usuário orientado sobre **onde está** e **o que passou**. Ao reportar
-progresso — e obrigatoriamente ao **parar** ou **fechar** —, use um painel como o de
-[`assets/painel-orquestracao.md`](assets/painel-orquestracao.md):
+Copie e mantenha atualizado ao longo do fluxo:
 
 ```
-# review-and-fix — <alvo>
-**Fase atual:** <review | decompose | correção N/total | fechado>
-
-## Achados (da review)
-| # | Achado           | Severidade | Decisão do usuário   |
-|---|------------------|------------|----------------------|
-| 1 | <descrição>      | alta       | corrigir agora       |
-| 2 | <descrição>      | média      | fase futura (adiado) |
-
-## Correções (um sprint por achado aprovado)
-| # | Correção (achado) | Execução | Gate (verify)  | Mini review (sumiu? quebrou algo?) | Estado     |
-|---|-------------------|----------|----------------|------------------------------------|------------|
-| 1 | <achado 1>        | ✅        | ✅ CONFORME     | ✅ bug sumiu / nada quebrou         | fechado    |
-| 2 | <achado 3>        | ✅        | ✅ CONFORME     | ❌ regressão em volta               | PAROU AQUI |
-
-## Checkpoints humanos
-- [x] Achados apresentados e aprovados pelo usuário
-- [x] Plano de correções aprovado pelo usuário
-
-## Situação
-<CONFORME e seguindo | PAROU na correção N, etapa <execução/gate/mini review> — motivo + o que reportar | FECHADO — achados corrigidos + verificados; adiados listados>
+- [ ] 1. Review completa feita, achados levantados
+- [ ] 2. Achados apresentados e aprovados pelo usuário
+- [ ] 3. Decompose gerou um sprint de correção por achado aprovado
+- [ ] 4. Plano de correções aprovado pelo usuário
+- [ ] 5. Correções executadas (loop 5a-5d por sprint, até o total)
+- [ ] 6. Fechamento verificado (prova por sprint + repo + checagens + nada regrediu)
 ```
 
-Quando o fluxo **para** num vermelho, o painel deve deixar claro **em qual correção**, **em qual
-etapa** (execução/gate/mini review) e **por quê** — para o usuário decidir o próximo passo. Um "parou
-e reportou" com o motivo concreto (ex.: "a correção do achado 3 passou o gate mas o mini review
-detectou que quebrou o parsing adjacente") é um resultado **válido**, não um fracasso.
+**1. Revisar.** Invoque `review` em escopo completo sobre o alvo indicado, preferencialmente em
+subagent, para produzir o relatório de achados priorizados. Fase de diagnóstico — não se corrige
+nada aqui. Se a `review` não achar nada relevante, o ciclo termina: reporte "nada a corrigir" em vez
+de inventar correções para justificar o fluxo.
 
-## Princípios (o núcleo, quando o roteiro não cobrir o caso)
+**2. Apresentar os achados — checkpoint humano.** O relatório é ponto de decisão humana, não lista
+de ordens automáticas. Apresente e espere confirmação de quais corrigir: o usuário confirma,
+reprioriza (a ordem da `review` é sugestão, não decreto), ou adia achados para fases futuras. Só os
+**aprovados** seguem para a decomposição — corrigir tudo sem passar pelo usuário atropela o controle
+humano que esta fase existe para garantir.
 
-- **Orquestrar, não reimplementar.** Cada fase é uma chamada à primitiva. Se você se pegar auditando,
-  decompondo ou corrigindo código à mão aqui dentro, saiu do papel: delegue.
-- **Um achado, um sprint.** Correções isoladas para **checkpoint limpo** e **rollback fácil**. Não
-  amontoe achados num sprint só.
-- **Prova por correção.** Cada sprint de correção só fecha com a **evidência de que aquele bug
-  específico sumiu** — e o mini review confirma que **nada quebrou em volta**. Sem prova, não é
-  correção fechada; é esperança.
-- **Controle humano.** Os **achados** e o **plano de correção** são aprovados pelo usuário antes de
-  executar. Adiar um achado é decisão legítima do usuário, não sua. O início do fluxo também é do
-  usuário (disparo manual).
-- **Checkpoint em cada fronteira.** Falha **para** o fluxo; sucesso **avança**. Gate de conformidade
-  **antes** do mini review; mini review após cada correção; parada no vermelho — inclusive por
-  regressão detectada.
-- **Conformidade antes de qualidade.** `verify-sprint` (a correção provou o que prometeu?) roda
-  **antes** do mini review (`review`) — porque uma correção bem-feita ainda pode não provar que o
-  bug sumiu.
-- **Fechamento é verificado, não sentido.** "Resolvido" exige prova: por sprint, no repo e nas
-  checagens do projeto — não uma impressão.
-- **Manual e deliberada.** Esta skill nunca é auto-invocada; o usuário decide o início.
+**3. Decompor.** Invoque `decompose` sobre os achados aprovados — **um sprint de correção por
+achado**. A decomposição ordena por severidade + dependências + vitória rápida, e dá a cada um o
+entregável verificável: a prova de que aquele bug específico sumiu. Um achado, um sprint é
+deliberado — checkpoint limpo, rollback fácil; amontoar achados embaralha a prova (qual correção
+quebrou o quê?).
 
-## Fronteiras (o que esta skill NÃO faz)
+**4. Aprovação do plano.** Apresente o plano de correções e espere aprovação antes de executar
+qualquer coisa — último ponto barato para corrigir rumo.
 
-- **Não constrói do zero** — isso é `build-project`. A `review-and-fix` **endurece o que já existe**
-  via revisar-e-corrigir; erguer um projeto a partir de requisitos é o fluxo de orquestração irmão.
-- **Não reimplementa `review`, `decompose` nem a execução** — cada uma dessas é a sua primitiva
-  (`review`, `decompose`, `execute-sprint`, `verify-sprint`). Esta skill só as **encadeia**.
-- **Não corrige achados que o usuário adiou** — os achados marcados como "fase futura" ficam de fora
-  do ciclo atual; não vire sprint por conta própria só porque a `review` os apontou.
-- **Não é auto-invocável** — só roda com `/review-and-fix` explícito. A primitiva `review` sozinha,
-  essa sim, pode ser disparada pelo modelo para uma auditoria pontual.
+**5. Loop de correção** — por sprint, nesta ordem (conformidade antes de qualidade):
 
-## Variantes por tecnologia (futuro)
+  a. **`execute-sprint`** na próxima correção: planeja, implementa só aquele escopo, valida a prova
+     de que o bug sumiu, commita.
 
-A orquestração é agnóstica de tecnologia por decisão: a **sequência** de fases e os **checkpoints**
-não mudam entre um projeto de dados, uma API ou uma migração — o que muda são os comandos concretos
-(como provar que um bug sumiu, como validar), que vivem nas primitivas e no `CLAUDE.md` do projeto.
-Não há variantes de stack previstas para esta camada. Se algum dia surgir necessidade de um guia
-específico, ele entra como `references/<tema>.md`, lido sob demanda — o núcleo (encadear
-revisar→corrigir com checkpoints) permanece genérico.
+  b. **`verify-sprint`** (subagent independente) — GATE: a correção corresponde ao definido,
+     inclusive a prova exigida ("bug X sumiu") foi produzida e testa a coisa certa, não uma prova
+     adjacente?
+     - CONFORME → segue para 5c.
+     - NÃO CONFORME / PARCIAL → **pare e reporte**. Não feche a correção, não vá ao mini review.
+
+     Antes do mini review porque uma correção pode estar bem-feita e ainda não provar que o bug
+     sumiu — checar aderência primeiro evita gastar revisão de qualidade em algo já fora do
+     combinado.
+
+  c. **`review`** em escopo pequeno — só o diff da correção, confirmando duas coisas: (a) o bug de
+     fato sumiu, (b) nada foi quebrado em volta. O item (b) é o coração do endurecimento: corrigir A
+     e quebrar B silenciosamente é retrocesso, não progresso.
+
+  d. **Checkpoint.** Falha em execução, gate, ou mini review — inclusive regressão detectada —
+     → pare e reporte, não avance automaticamente. Sucesso → próxima correção, preferencialmente com
+     contexto limpo.
+
+**6. Fechamento verificado.** Não declare "resolvido" por sensação. Confirme com prova:
+- cada achado endereçado foi de fato corrigido — a prova por sprint foi produzida e **re-executada
+  do estado limpo**, não só relatada como verde;
+- estado do repositório (correções commitadas, nada pela metade);
+- checagens do projeto (`CLAUDE.md`/regras);
+- nada em volta regrediu — smoke do fluxo que as correções tocam, de ponta a ponta.
+
+Prova está no artefato, não na nota: um achado só está fechado quando a correção está no código
+entregue e a prova foi re-executada — não quando um commit *diz* que corrigiu.
+
+Fechamento honesto: "achados A, B, C corrigidos e verificados; D, E ficaram para fases futuras a
+pedido do usuário" — não "acho que tá tudo resolvido". Se a correção fizer novas questões surgirem,
+elas originam outro ciclo de `/review-and-fix`, não algo emendado silenciosamente aqui.
+
+## Formato de saída
+
+Ao reportar progresso, parar ou fechar, use o painel em
+[`assets/painel-orquestracao.md`](assets/painel-orquestracao.md). Ao parar, deixe claro **qual
+correção**, **qual etapa** e **por quê** — "parou e reportou" com motivo concreto (ex.: "a correção
+do achado 3 passou o gate mas o mini review detectou que quebrou o parsing adjacente") é resultado
+válido, não fracasso.
+
+## Princípios (quando o roteiro não cobrir o caso)
+
+- Orquestrar, não reimplementar — se estiver auditando, decompondo ou corrigindo à mão aqui, saiu
+  do papel: delegue.
+- Um achado, um sprint — correções isoladas para checkpoint limpo e rollback fácil.
+- Prova por correção — sem evidência de que o bug sumiu e nada quebrou em volta, não é correção
+  fechada, é esperança.
+- Achados e plano de correção são aprovados pelo usuário antes de executar; adiar um achado é
+  decisão dele, não sua.
+- Falha para o fluxo, sucesso avança. Gate antes do mini review; parada no vermelho inclusive por
+  regressão.
+- Fechamento é verificado, não sentido.
+
+## Fronteiras
+
+- Não constrói do zero — isso é `build-project`. Esta skill endurece o que já existe.
+- Não reimplementa `review`, `decompose` ou a execução — só as encadeia.
+- Não corrige achados que o usuário adiou — ficam de fora do ciclo atual, não viram sprint por
+  conta própria.
+- Não é auto-invocável — só roda com `/review-and-fix` explícito. A `review` sozinha pode ser
+  disparada pelo modelo para auditoria pontual.
+
+## Variantes por tecnologia
+
+Agnóstica por decisão: a sequência de fases e os checkpoints não mudam entre domínios; comandos
+concretos vivem nas primitivas e no `CLAUDE.md` do projeto. Se surgir necessidade de guia
+específico, entra como `references/<tema>.md`, lido sob demanda.

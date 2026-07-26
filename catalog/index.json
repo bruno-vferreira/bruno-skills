@@ -40,8 +40,62 @@
         "email": "bvferreira@hotmail.com",
         "name": "Bruno Ferreira"
       },
+      "category": "productivity",
+      "description": "Sincroniza de forma INCREMENTAL as gravações do Plaud para o disco local, via Plaud MCP. Dispare com \"/plaud:sync\" e sempre que o usuário quiser \"sincronizar o Plaud\", \"baixar as gravações novas\", \"atualizar minhas reuniões do Plaud\", \"puxar as transcrições/notas do Plaud\", ou \"trazer o que tem de novo no Plaud\". Baixa só o que falta (respeita o checkpoint em .plaud/checkpoint.json): para cada gravação nova ou incompleta grava um markdown com frontmatter (resumo, tópicos e transcrição) e o áudio mp3, e atualiza o checkpoint. Para baixar TUDO ignorando o checkpoint, use a skill sync-all. Não faz upload nem altera nada no servidor Plaud.",
+      "homepage": "https://github.com/bruno-vferreira/bruno-skills",
+      "id": "plaud/sync",
+      "keywords": [
+        "plaud",
+        "mcp",
+        "transcription",
+        "sync",
+        "meetings",
+        "markdown",
+        "audio",
+        "pt-br"
+      ],
+      "license": "MIT",
+      "name": "sync",
+      "path": "./plugins/plaud/skills/sync/SKILL.md",
+      "plugin": "plaud",
+      "repository": "https://github.com/bruno-vferreira/bruno-skills",
+      "source": "./plugins/plaud",
+      "version": "0.1.0"
+    },
+    {
+      "author": {
+        "email": "bvferreira@hotmail.com",
+        "name": "Bruno Ferreira"
+      },
+      "category": "productivity",
+      "description": "Carga TOTAL das gravações do Plaud para o disco local, via Plaud MCP, IGNORANDO o checkpoint. Dispare com \"/plaud:sync-all\" e quando o usuário quiser \"baixar tudo do Plaud\", \"sincronizar tudo do zero\", \"rebaixar todas as gravações\", \"reprocessar/reconstruir minhas notas do Plaud\", ou \"ignorar o checkpoint e trazer tudo\". Reprocessa TODAS as gravações (reescreve os markdowns; o áudio já baixado é pulado para evitar retráfego) e, ao final, REESCREVE o checkpoint em .plaud/checkpoint.json refletindo o estado completo. Para o dia a dia (baixar só o que falta, respeitando o checkpoint), use a skill sync. Não faz upload nem altera nada no servidor Plaud.",
+      "homepage": "https://github.com/bruno-vferreira/bruno-skills",
+      "id": "plaud/sync-all",
+      "keywords": [
+        "plaud",
+        "mcp",
+        "transcription",
+        "sync",
+        "meetings",
+        "markdown",
+        "audio",
+        "pt-br"
+      ],
+      "license": "MIT",
+      "name": "sync-all",
+      "path": "./plugins/plaud/skills/sync-all/SKILL.md",
+      "plugin": "plaud",
+      "repository": "https://github.com/bruno-vferreira/bruno-skills",
+      "source": "./plugins/plaud",
+      "version": "0.1.0"
+    },
+    {
+      "author": {
+        "email": "bvferreira@hotmail.com",
+        "name": "Bruno Ferreira"
+      },
       "category": "development",
-      "description": "Orquestra a construção de um projeto do zero ao fim, encadeando as etapas do método de sprints: especificar os requisitos (`spec`), decompor em sprints (`decompose`), executar cada sprint com verificação (`execute-sprint` → `verify-sprint` como GATE → mini review) e, ao final, revisar o repositório inteiro (`review`). É o fluxo macro que transforma \"quero construir X\" em um projeto implementado, verificado e revisado, com checkpoint em cada fronteira. Fluxo de ALTO IMPACTO e longa duração — por isso é MANUAL: só roda quando o usuário a invoca explicitamente com `/build-project`; o modelo NUNCA a dispara sozinho ao interpretar uma conversa. Orquestra as primitivas, não as reimplementa. Não corrige achados de review (isso é o fluxo `review-and-fix`). Aplica-se a qualquer domínio.",
+      "description": "Orquestra a construção de um projeto do zero ao fim, encadeando as etapas do método de sprints: especificar (`spec`), decompor (`decompose`), executar cada sprint com verificação (`execute-sprint` → `verify-sprint` como GATE → mini review) e revisar o repositório inteiro ao final (`review`). Transforma \"quero construir X\" em um projeto implementado, verificado e revisado, com checkpoint em cada fronteira. Fluxo de ALTO IMPACTO e longa duração — MANUAL: só roda com `/build-project` explícito, o modelo NUNCA a dispara sozinho. Orquestra as primitivas, não as reimplementa. Não corrige achados de review (isso é `review-and-fix`). Agnóstica de domínio e tecnologia.",
       "homepage": "https://github.com/bruno-vferreira/bruno-skills",
       "id": "sdd/build-project",
       "keywords": [
@@ -63,7 +117,7 @@
       "plugin": "sdd",
       "repository": "https://github.com/bruno-vferreira/bruno-skills",
       "source": "./plugins/sdd",
-      "version": "0.1.0"
+      "version": "0.2.0"
     },
     {
       "author": {
@@ -71,7 +125,7 @@
         "name": "Bruno Ferreira"
       },
       "category": "development",
-      "description": "Quebra um corpo de trabalho — uma especificação de projeto (saída da `spec`) ou um relatório de code review (saída da `review`) — em uma sequência de sprints: unidades de escopo fechado, com ordem justificada, dependências explícitas e, cada uma, um entregável verificável. Emite um índice da sequência e um prompt de sprint por unidade, prontos para a `execute-sprint`. A fonte é parâmetro: decompor uma spec em sprints de desenvolvimento e decompor um review em sprints de correção são a mesma operação. Use sempre que o usuário quiser planejar, organizar ou dividir um trabalho em fases/etapas/sprints. Dispare também por \"/decompose\" e quando o usuário disser \"monte o roadmap\", \"divida isso em partes\", \"crie as sprints\", \"quebra isso em etapas\" ou \"organize as correções\", mesmo sem a palavra \"sprint\". Não produz a especificação, não executa os sprints nem faz o review que os origina — apenas decompõe e sequencia. Aplica-se a qualquer domínio.",
+      "description": "Quebra um corpo de trabalho — uma especificação (saída da `spec`), um relatório de code review (saída da `review`) ou o backlog de débito técnico (TECH_DEBT.md) — em uma sequência de sprints: unidades de escopo fechado, ordem justificada, dependências explícitas e, cada uma, um entregável verificável. Emite um índice e um prompt de sprint por unidade, prontos para a `execute-sprint`. A fonte é parâmetro: spec vira sprints de desenvolvimento, review vira sprints de correção, backlog vira sprints de refatoração — mesma operação. Use para planejar, organizar ou dividir trabalho em fases/sprints, ou \"montar sprint de débito técnico\". Dispare também por \"/decompose\" e \"monte o roadmap\", \"divida isso em partes\", \"crie as sprints\", \"organize as correções\", mesmo sem a palavra \"sprint\". Não produz a especificação, não executa os sprints nem faz o review que os origina — apenas decompõe e sequencia. Aplica-se a qualquer domínio.",
       "homepage": "https://github.com/bruno-vferreira/bruno-skills",
       "id": "sdd/decompose",
       "keywords": [
@@ -93,7 +147,7 @@
       "plugin": "sdd",
       "repository": "https://github.com/bruno-vferreira/bruno-skills",
       "source": "./plugins/sdd",
-      "version": "0.1.0"
+      "version": "0.2.0"
     },
     {
       "author": {
@@ -101,7 +155,7 @@
         "name": "Bruno Ferreira"
       },
       "category": "development",
-      "description": "Executa um único sprint de desenvolvimento de forma disciplinada: planeja antes de agir, implementa apenas o escopo do sprint, valida o entregável com prova objetiva e faz commit — parando e reportando se a validação falhar. Use sempre que o usuário for executar, rodar ou implementar um sprint, uma fase, uma etapa de um plano/roadmap, ou um item de uma lista de tarefas com escopo e critério de aceite definidos — mesmo que ele não diga a palavra \"sprint\". Aplica-se a qualquer domínio (código, infraestrutura, documentação, dados). Aplica-se também a sprints de correção originados de code review.",
+      "description": "Executa um único sprint de desenvolvimento de forma disciplinada: planeja antes de agir, implementa apenas o escopo do sprint, valida o entregável com prova objetiva e faz commit — parando e reportando se a validação falhar. Achados fora do escopo (bugs pré-existentes, código fora do padrão) são registrados em TECH_DEBT.md em vez de corrigidos em silêncio ou descartados — correção incidental só quando pontual e na mesma vizinhança do sprint. Use sempre que o usuário for executar, rodar ou implementar um sprint, uma fase, uma etapa de um plano/roadmap, ou um item de uma lista de tarefas com escopo e critério de aceite definidos — mesmo que ele não diga a palavra \"sprint\". Aplica-se a qualquer domínio (código, infraestrutura, documentação, dados). Aplica-se também a sprints de correção originados de code review.",
       "homepage": "https://github.com/bruno-vferreira/bruno-skills",
       "id": "sdd/execute-sprint",
       "keywords": [
@@ -123,7 +177,7 @@
       "plugin": "sdd",
       "repository": "https://github.com/bruno-vferreira/bruno-skills",
       "source": "./plugins/sdd",
-      "version": "0.1.0"
+      "version": "0.2.0"
     },
     {
       "author": {
@@ -153,7 +207,7 @@
       "plugin": "sdd",
       "repository": "https://github.com/bruno-vferreira/bruno-skills",
       "source": "./plugins/sdd",
-      "version": "0.1.0"
+      "version": "0.2.0"
     },
     {
       "author": {
@@ -161,7 +215,7 @@
         "name": "Bruno Ferreira"
       },
       "category": "development",
-      "description": "Audita código, configuração ou documentação em busca de problemas que linters e validadores não pegam: divergências entre o contrato (schema, README, spec) e o comportamento real, bugs de lógica, suposições não verificadas e inconsistências entre camadas. Produz um relatório de achados priorizados por severidade — com arquivo, cenário de falha concreto e correção sugerida — e lista também o que está correto. O escopo é parâmetro: o diff de um sprint (mini review) ou o repositório inteiro. Use sempre que o usuário pedir uma revisão, um code review, uma auditoria, uma checagem de qualidade ou consistência, ou perguntar 'isto está correto? está bem-feito?' sobre um código ou um repositório — e também ao final de um sprint, para revisar o que acabou de ser implementado. Não corrige os achados nem verifica conformidade ao que o sprint pediu (isso é da verify-sprint); aqui se julga qualidade. Preferencialmente executada em subagent. Aplica-se a qualquer domínio.",
+      "description": "Audita código, configuração ou documentação em busca de problemas que linters e validadores não pegam: divergências entre o contrato (schema, README, spec) e o comportamento real, bugs de lógica, suposições não verificadas e inconsistências entre camadas. Produz um relatório de achados priorizados por severidade — com arquivo, cenário de falha concreto e correção sugerida — e lista também o que está correto. O escopo é parâmetro: o diff de um sprint (mini review) ou o repositório inteiro; achados fora do escopo delimitado vão para TECH_DEBT.md em vez de expandir o relatório. Use sempre que o usuário pedir uma revisão, um code review, uma auditoria, uma checagem de qualidade, ou perguntar 'isto está correto? está bem-feito?' sobre código ou um repositório — e ao final de um sprint, para revisar o que acabou de ser implementado. Não corrige os achados nem verifica conformidade ao sprint (isso é da verify-sprint); aqui se julga qualidade. Preferencialmente executada em subagent. Aplica-se a qualquer domínio.",
       "homepage": "https://github.com/bruno-vferreira/bruno-skills",
       "id": "sdd/review",
       "keywords": [
@@ -183,7 +237,7 @@
       "plugin": "sdd",
       "repository": "https://github.com/bruno-vferreira/bruno-skills",
       "source": "./plugins/sdd",
-      "version": "0.1.0"
+      "version": "0.2.0"
     },
     {
       "author": {
@@ -213,7 +267,7 @@
       "plugin": "sdd",
       "repository": "https://github.com/bruno-vferreira/bruno-skills",
       "source": "./plugins/sdd",
-      "version": "0.1.0"
+      "version": "0.2.0"
     },
     {
       "author": {
@@ -243,7 +297,7 @@
       "plugin": "sdd",
       "repository": "https://github.com/bruno-vferreira/bruno-skills",
       "source": "./plugins/sdd",
-      "version": "0.1.0"
+      "version": "0.2.0"
     },
     {
       "author": {
@@ -273,7 +327,7 @@
       "plugin": "sdd",
       "repository": "https://github.com/bruno-vferreira/bruno-skills",
       "source": "./plugins/sdd",
-      "version": "0.1.0"
+      "version": "0.2.0"
     }
   ]
 }

@@ -1,0 +1,23 @@
+{
+  "name": "plaud",
+  "displayName": "Plaud — Sincronismo de Gravações",
+  "description": "Sincroniza suas gravações do Plaud (transcrição, tópicos, nota-resumo de IA e o áudio mp3) para o disco local via Plaud MCP, gravando cada gravação em markdown com frontmatter sob .plaud/recordings/ e mantendo um checkpoint em .plaud/checkpoint.json. Inclui a skill sync (sincronismo incremental, respeitando o checkpoint) e a skill sync-all (carga total ignorando o checkpoint e reescrevendo-o ao fim). Nunca persiste URLs assinadas; guarda só o id do Plaud.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Bruno Ferreira",
+    "email": "bvferreira@hotmail.com"
+  },
+  "homepage": "https://github.com/bruno-vferreira/bruno-skills",
+  "repository": "https://github.com/bruno-vferreira/bruno-skills",
+  "license": "MIT",
+  "keywords": [
+    "plaud",
+    "mcp",
+    "transcription",
+    "sync",
+    "meetings",
+    "markdown",
+    "audio",
+    "pt-br"
+  ]
+}
