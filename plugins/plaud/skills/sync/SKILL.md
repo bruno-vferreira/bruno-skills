@@ -34,9 +34,12 @@ checkpoint e reprocessar tudo), use a skill **`sync-all`**.
 
 ## Pré-condições
 
-- **Plaud MCP conectado.** Os tools observados têm o prefixo `mcp__claude_ai_Plaud__*`
-  (`list_files`, `get_file`, `get_current_user`). Se o servidor Plaud do usuário expuser outro
-  prefixo, use os tools equivalentes por capacidade (listar gravações / obter uma gravação / usuário
+- **Plaud MCP.** Este plugin **empacota** o servidor Plaud MCP em `.mcp.json`
+  (`https://mcp.plaud.ai/mcp`, `type: http`): ao habilitar o plugin, o Claude Code o carrega e faz a
+  autenticação (OAuth) no primeiro uso — não é preciso configurá-lo à mão. Os tools ficam com o
+  prefixo **`mcp__plaud__*`** (`list_files`, `get_file`, `get_current_user`). Se o usuário já usa o
+  conector "claude.ai Plaud" em vez do bundlado, o prefixo é `mcp__claude_ai_Plaud__*`. Em qualquer
+  caso, use os tools equivalentes por capacidade (listar gravações / obter uma gravação / usuário
   atual).
 - **`python3`** (>= 3.8) disponível no shell.
 - **Diretório de destino** = o diretório de trabalho atual (`cwd`). O `.plaud/` é criado ali. Se o

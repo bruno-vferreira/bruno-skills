@@ -31,6 +31,7 @@ browsable site later.
 │   └── plaud/                   # a 2-skill plugin (Plaud MCP → local markdown + audio)
 │       ├── .claude-plugin/
 │       │   └── plugin.json
+│       ├── .mcp.json            # bundles the Plaud MCP server (https://mcp.plaud.ai/mcp)
 │       ├── scripts/
 │       │   └── plaud_sync.py    # shared engine (diff / save / finalize) + tests/
 │       └── skills/
@@ -70,7 +71,8 @@ The catalog currently holds three plugins:
   each recording becomes a markdown note (frontmatter + summary + topics + transcript) plus its
   `audio.mp3` (when the recording has audio), tracked by a checkpoint in `.plaud/`. Two skills — `sync` (incremental) and
   `sync-all` (full reload) — namespaced as `/plaud:sync` and `/plaud:sync-all`. Signed URLs are
-  never persisted; only the Plaud `id` is stored.
+  never persisted; only the Plaud `id` is stored. The plugin bundles the Plaud MCP server via
+  `.mcp.json` (`https://mcp.plaud.ai/mcp`), so enabling it wires up the MCP (OAuth on first use).
 
 ## Install
 

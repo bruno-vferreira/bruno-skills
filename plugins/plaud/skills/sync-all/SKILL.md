@@ -40,9 +40,11 @@ usuário antes de disparar — e, no dia a dia, preferir a `sync`.
 
 ## Pré-condições
 
-- **Plaud MCP conectado.** Tools observados com prefixo `mcp__claude_ai_Plaud__*` (`list_files`,
-  `get_file`, `get_current_user`). Se o servidor expuser outro prefixo, use os equivalentes por
-  capacidade.
+- **Plaud MCP.** Este plugin **empacota** o servidor Plaud MCP em `.mcp.json`
+  (`https://mcp.plaud.ai/mcp`, `type: http`): habilitar o plugin já o carrega, com OAuth no primeiro
+  uso. Tools com prefixo **`mcp__plaud__*`** (`list_files`, `get_file`, `get_current_user`). Se o
+  usuário usa o conector "claude.ai Plaud", o prefixo é `mcp__claude_ai_Plaud__*`. Em qualquer caso,
+  use os tools equivalentes por capacidade.
 - **`python3`** (>= 3.8).
 - **Diretório de destino** = `cwd` (o `.plaud/` é criado ali), ou a pasta indicada pelo usuário.
 
