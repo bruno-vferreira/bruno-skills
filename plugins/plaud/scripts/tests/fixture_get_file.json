@@ -1,0 +1,43 @@
+{
+  "id": "abc123def4567890",
+  "name": "07-13 Reunião: Teste Sintético de Sincronização",
+  "created_at": "2026-07-13T13:24:37",
+  "serial_number": "1783947883440",
+  "start_at": "2026-07-13T13:04:43.440000",
+  "duration": 1179000,
+  "presigned_url": "https://plaud-bucket.s3-accelerate.amazonaws.com/audiofiles/abc123def4567890.mp3?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=FAKEFAKEFAKE%2F20260726%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20260726T000000Z&X-Amz-Expires=86400&X-Amz-Security-Token=FAKE_TOKEN_SHOULD_NEVER_BE_WRITTEN&X-Amz-Signature=deadbeefdeadbeef",
+  "source_list": [
+    {
+      "data_id": "source_transaction:x:abc123def4567890",
+      "data_type": "transaction",
+      "data_title": "",
+      "data_content": "[{\"start_time\": 0, \"end_time\": 5000, \"content\": \"Bom dia a todos, vamos come\\u00e7ar a reuni\\u00e3o de teste.\", \"speaker\": \"Speaker 1\", \"original_speaker\": \"Speaker 1\"}, {\"start_time\": 65000, \"end_time\": 72000, \"content\": \"Perfeito, concordo com a proposta apresentada.\", \"speaker\": \"Eu\", \"original_speaker\": \"Speaker 2\"}, {\"start_time\": 3661000, \"end_time\": 3665000, \"content\": \"Passando de uma hora, valido o formato do timestamp longo.\", \"speaker\": \"Speaker 1\", \"original_speaker\": \"Speaker 1\"}]",
+      "data_link": ""
+    },
+    {
+      "data_id": "source_outline:x:abc123def4567890",
+      "data_type": "outline",
+      "data_title": "",
+      "data_content": "[{\"start_time\": 0, \"end_time\": 60000, \"topic\": \"Abertura da reuni\\u00e3o\"}, {\"start_time\": 60000, \"end_time\": 120000, \"topic\": \"Discuss\\u00e3o da proposta\"}]",
+      "data_link": ""
+    },
+    {
+      "data_id": "source_transaction_polish:x:abc123def4567890",
+      "data_type": "transaction_polish",
+      "data_title": "",
+      "data_content": "",
+      "data_link": "https://prod-plaud-content-storage.s3.amazonaws.com/permanent/file_transaction_polish/abc123def4567890?X-Amz-Signature=fakepolishsignature&X-Amz-Security-Token=FAKE_POLISH_TOKEN"
+    }
+  ],
+  "note_list": [
+    {
+      "data_id": "auto_sum:x:abc123def4567890",
+      "data_type": "auto_sum_note",
+      "data_title": "Summary",
+      "data_tab_name": "Summary",
+      "data_content": "# Ata de Reunião\n## Informações Gerais\n- Reunião sintética para exercitar o motor de sincronização.\n## Decisões Tomadas\n- Aprovar a proposta de teste.\n",
+      "data_link": "",
+      "data_error_code": 10
+    }
+  ]
+}
