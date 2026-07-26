@@ -20,8 +20,8 @@ metadata:
 
 Baixa **tudo**, **ignorando o checkpoint** para decidir o que processar: percorre **todas** as
 gravações do servidor, regrava o `nota.md` de cada uma e, ao final, **reescreve** o
-`.plaud/checkpoint.json` para refletir o estado completo (inclusive removendo registros órfãos que não
-têm mais pasta em disco).
+`.plaud/checkpoint.json` para refletir o estado completo (inclusive removendo registros órfãos cujo
+`nota.md` não existe mais em disco).
 
 É a **irmã** da skill `sync`. A diferença é só a **política**: a `sync` respeita o checkpoint e baixa
 apenas o que falta; a `sync-all` ignora o checkpoint (não roda o `diff`) e reprocessa tudo, terminando
@@ -33,6 +33,10 @@ com um `finalize --rebuild`. Ambas usam o mesmo **motor** `scripts/plaud_sync.py
 Quando o usuário quer uma **carga total** ou uma **reconstrução**: primeira sincronização, "baixa tudo
 do zero", "reprocessa minhas notas", ou quando o checkpoint pode estar inconsistente e ele quer
 regravar tudo. Para o uso incremental do dia a dia, é a skill **`sync`**.
+
+É uma **operação em lote e custosa**: faz **uma** chamada `get_file` por gravação, então numa
+biblioteca grande é lenta e consome quota do MCP. Se houver muitas gravações, vale confirmar com o
+usuário antes de disparar — e, no dia a dia, preferir a `sync`.
 
 ## Pré-condições
 
@@ -94,7 +98,8 @@ python3 "$ENGINE" finalize --root "$ROOT" --rebuild --user-id "<id>" --user-nick
 O `--rebuild` **reescreve** o checkpoint a partir do estado real em disco: remove registros cujo
 `nota.md` não existe mais (órfãos de um checkpoint antigo/inconsistente) e recomputa os campos de topo
 (`version`, `last_synced_at`, `last_created_at`). É isto que torna a `sync-all` uma **reconstrução**, e
-não só um "baixar o que falta".
+não só um "baixar o que falta". Se você **pulou o passo 3**, rode sem as flags `--user-*` (o usuário
+anterior no checkpoint é preservado).
 
 ### 5. Limpar e reportar
 
@@ -114,6 +119,9 @@ final; quantos órfãos removidos, se algum).
   (`mktemp -d`) e são apagados ao final.
 - **Não rebaixa áudio à toa:** `save` pula o `audio.mp3` já presente não-vazio; a carga total regrava o
   markdown mas evita retráfego do binário.
+- **Reescreve TODOS os `nota.md`:** a carga total regrava cada `nota.md` a partir do servidor —
+  **edições manuais** feitas nesses arquivos serão **descartadas** (o `audio.mp3` é preservado; só o
+  markdown é regravado). Se o usuário anota nas notas, prefira a `sync`, que só toca o que falta.
 - **Idempotente:** rodar de novo converge para o mesmo estado.
 
 ## Fronteiras (o que esta skill NÃO faz)
