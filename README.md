@@ -68,7 +68,7 @@ The catalog currently holds three plugins:
   `/sdd:<skill>` (e.g. `/sdd:build-project`); the skills also trigger from natural language.
 - **`plaud`** — syncs your [Plaud](https://www.plaud.ai) recordings to disk via the Plaud MCP:
   each recording becomes a markdown note (frontmatter + summary + topics + transcript) plus its
-  `audio.mp3`, tracked by a checkpoint in `.plaud/`. Two skills — `sync` (incremental) and
+  `audio.mp3` (when the recording has audio), tracked by a checkpoint in `.plaud/`. Two skills — `sync` (incremental) and
   `sync-all` (full reload) — namespaced as `/plaud:sync` and `/plaud:sync-all`. Signed URLs are
   never persisted; only the Plaud `id` is stored.
 
