@@ -60,10 +60,6 @@ def checkpoint_path(root: Path) -> Path:
     return plaud_dir(root) / "checkpoint.json"
 
 
-def recordings_dir(root: Path) -> Path:
-    return plaud_dir(root) / RECORDINGS_SUBDIR
-
-
 def load_checkpoint(root: Path) -> dict:
     path = checkpoint_path(root)
     if not path.is_file():
@@ -152,12 +148,18 @@ def folder_for(rec: dict, rec_id: str, taken: dict) -> str:
     return f"{RECORDINGS_SUBDIR}/{base}-{rec_id[:8]}"
 
 
+def to_ms(value: object) -> int:
+    """Coerce a duration to int milliseconds — handles int, float, and numeric
+    strings ('1179000', '1179000.0'); returns 0 when uncoercible."""
+    try:
+        return int(float(value))
+    except (TypeError, ValueError):
+        return 0
+
+
 def hms(ms: object) -> str:
     """Milliseconds -> M:SS or H:MM:SS timestamp label."""
-    try:
-        total = int(ms) // 1000
-    except (TypeError, ValueError):
-        return "0:00"
+    total = to_ms(ms) // 1000
     h, rem = divmod(total, 3600)
     m, s = divmod(rem, 60)
     if h:
@@ -166,10 +168,10 @@ def hms(ms: object) -> str:
 
 
 def human_duration(ms: object) -> str:
-    """Milliseconds -> compact human duration like '19m39s' or '1h05m03s'."""
-    try:
-        total = int(ms) // 1000
-    except (TypeError, ValueError):
+    """Milliseconds -> compact human duration like '19m39s' or '1h05m03s'.
+    Empty string for a missing/zero/uncoercible duration."""
+    total = to_ms(ms) // 1000
+    if total <= 0:
         return ""
     h, rem = divmod(total, 3600)
     m, s = divmod(rem, 60)
@@ -187,10 +189,22 @@ def yamlq(value: object) -> str:
     s = str(value)
     if s == "":
         return '""'
-    reserved = {"true", "false", "null", "yes", "no", "on", "off"}
-    if s == s.strip() and re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9 ._/-]*", s) and s.lower() not in reserved:
+    reserved = {"true", "false", "null", "yes", "no", "on", "off", "~"}
+    looks_numeric = bool(re.fullmatch(r"[+-]?\d+(\.\d+)?([eE][+-]?\d+)?", s))
+    if (
+        s == s.strip()
+        and re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9 ._/-]*", s)
+        and s.lower() not in reserved
+        and not looks_numeric  # keep numeric-looking strings (serial_number) as strings
+    ):
         return s  # plain, unambiguous scalar: safe unquoted
-    escaped = s.replace("\\", "\\\\").replace('"', '\\"')
+    escaped = (
+        s.replace("\\", "\\\\")
+        .replace('"', '\\"')
+        .replace("\n", "\\n")
+        .replace("\r", "\\r")
+        .replace("\t", "\\t")
+    )
     return f'"{escaped}"'
 
 
@@ -249,6 +263,7 @@ def _demote_headings(md: str) -> str:
 
 def render_note(payload: dict, sections: dict, audio_present: bool) -> str:
     name = payload.get("name") or "(sem título)"
+    title = " ".join(str(name).split())  # single-line heading (collapse any newlines)
     audio_field = yamlq(AUDIO_NAME) if audio_present else '""'
     fm = [
         "---",
@@ -257,7 +272,7 @@ def render_note(payload: dict, sections: dict, audio_present: bool) -> str:
         f"date: {yamlq(date_prefix(payload))}",
         f"start_at: {yamlq(payload.get('start_at'))}",
         f"created_at: {yamlq(payload.get('created_at'))}",
-        f"duration_ms: {int(payload['duration']) if str(payload.get('duration','')).isdigit() else 0}",
+        f"duration_ms: {to_ms(payload.get('duration'))}",
         f"duration: {yamlq(human_duration(payload.get('duration')))}",
         f"serial_number: {yamlq(payload.get('serial_number'))}",
         f"audio: {audio_field}",
@@ -265,7 +280,7 @@ def render_note(payload: dict, sections: dict, audio_present: bool) -> str:
         f"synced_at: {yamlq(now_iso())}",
         "---",
         "",
-        f"# {name}",
+        f"# {title}",
         "",
     ]
 
@@ -339,11 +354,18 @@ def download_audio(url: str, dest: Path) -> str:
 # --------------------------------------------------------------------------- #
 # subcommands
 # --------------------------------------------------------------------------- #
-def _local_complete(root: Path, folder_rel: str) -> bool:
+def _is_complete(root: Path, folder_rel: str, rec: object) -> bool:
+    """A recording is complete when its note exists and either the audio is
+    present, or the checkpoint records there is no audio to fetch
+    (audio_status 'no_url') — so a genuine no-audio recording converges instead
+    of being re-synced forever, while a failed download still retries."""
     folder = plaud_dir(root) / folder_rel
-    note = folder / NOTE_NAME
+    if not (folder / NOTE_NAME).is_file():
+        return False
     audio = folder / AUDIO_NAME
-    return note.is_file() and audio.is_file() and audio.stat().st_size > 0
+    if audio.is_file() and audio.stat().st_size > 0:
+        return True
+    return isinstance(rec, dict) and rec.get("audio_status") == "no_url"
 
 
 def cmd_diff(root: Path) -> int:
@@ -362,7 +384,8 @@ def cmd_diff(root: Path) -> int:
         rec_id = it["id"]
         known = recs.get(rec_id)
         folder_rel = known.get("folder") if isinstance(known, dict) and known.get("folder") else folder_for(it, rec_id, taken)
-        complete = rec_id in recs and _local_complete(root, folder_rel)
+        taken[folder_rel] = rec_id  # reserve so a same-day/same-name sibling gets suffixed
+        complete = rec_id in recs and _is_complete(root, folder_rel, known)
         entry = {"id": rec_id, "name": it.get("name", ""), "folder": folder_rel}
         if complete:
             skipped.append(entry)
@@ -406,6 +429,7 @@ def cmd_save(root: Path) -> int:
         "folder": folder_rel,
         "synced_at": now_iso(),
         "has_audio": audio_present,
+        "audio_status": audio_status,  # downloaded|skipped|failed|no_url (drives retry vs. converge)
     }
     write_checkpoint(root, ckpt)
 

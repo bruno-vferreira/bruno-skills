@@ -28,15 +28,20 @@ def check(cond: bool, label: str) -> None:
         failures.append(label)
 
 
-def run(args, stdin_path=None):
-    stdin = stdin_path.read_bytes() if stdin_path else None
+def run(args, stdin_path=None, stdin_bytes=None):
+    if stdin_bytes is None and stdin_path is not None:
+        stdin_bytes = stdin_path.read_bytes()
     proc = subprocess.run(
         [sys.executable, str(ENGINE), *args],
-        input=stdin, capture_output=True,
+        input=stdin_bytes, capture_output=True,
     )
     if proc.returncode != 0:
         print(proc.stderr.decode("utf-8", "replace"))
     return proc
+
+
+def only_note(root):
+    return next((root / ".plaud" / "recordings").glob("*/nota.md"))
 
 
 def main() -> int:
@@ -99,6 +104,63 @@ def main() -> int:
             if f.is_file() and f.suffix in (".md", ".json") and "X-Amz-" in f.read_text(encoding="utf-8", errors="ignore")
         ]
         check(not leaked, "no signed URL persisted anywhere in .plaud")
+
+    # ---- edge cases from the mini-review (each in its own clean root) ----
+    def save_obj(root, obj):
+        return run(["--root", str(root), "save"], stdin_bytes=json.dumps(obj).encode())
+
+    base = {
+        "id": "edge0000", "name": "Reunião de Borda",
+        "created_at": "2026-07-15T10:00:00", "start_at": "2026-07-15T09:00:00",
+        "serial_number": "888347281686075888", "duration": 1179000,
+        "presigned_url": "https://example.invalid/y.mp3?X-Amz-Signature=fake",
+        "source_list": [], "note_list": [],
+    }
+
+    # #1 newline / frontmatter-injection in name is escaped inline, not leaked
+    with tempfile.TemporaryDirectory() as tmp:
+        root = Path(tmp)
+        save_obj(root, dict(base, id="inj00001", name="Titulo\n---\ninjected: PWNED"))
+        md = only_note(root).read_text(encoding="utf-8")
+        fences = [ln for ln in md.splitlines() if ln.strip() == "---"]
+        check(len(fences) == 2, "frontmatter has exactly two --- fences (no injection leak)")
+        check("\\n---\\ninjected" in md, "newline in name escaped inline (\\n)")
+
+    # #3 numeric-looking serial_number stays a quoted string (no precision loss)
+    with tempfile.TemporaryDirectory() as tmp:
+        root = Path(tmp)
+        save_obj(root, dict(base, id="numq0001"))
+        md = only_note(root).read_text(encoding="utf-8")
+        check('serial_number: "888347281686075888"' in md, "numeric serial_number quoted as string")
+
+    # #5 float duration -> duration_ms consistent (not 0)
+    with tempfile.TemporaryDirectory() as tmp:
+        root = Path(tmp)
+        save_obj(root, dict(base, id="float001", duration=1179000.0))
+        md = only_note(root).read_text(encoding="utf-8")
+        check("duration_ms: 1179000" in md, "float duration -> duration_ms=1179000 (not 0)")
+        check("duration: 19m39s" in md, "float duration -> human 19m39s")
+
+    # #2 no-audio recording converges (not re-queued forever)
+    with tempfile.TemporaryDirectory() as tmp:
+        root = Path(tmp)
+        obj = dict(base, id="noaud001")
+        obj.pop("presigned_url")
+        st = json.loads(save_obj(root, obj).stdout.decode() or "{}")
+        check(st.get("audio") == "no_url", "save reports no_url when there is no presigned_url")
+        run(["--root", str(root), "finalize"])
+        lst = {"data": [dict(base, id="noaud001")]}
+        diff = json.loads(run(["--root", str(root), "diff"], stdin_bytes=json.dumps(lst).encode()).stdout.decode() or "{}")
+        skipped_ids = {e["id"] for e in diff.get("skipped", [])}
+        check("noaud001" in skipped_ids, "no-audio recording converges (diff skips it, no perpetual re-sync)")
+
+    # #4 diff assigns distinct folders to two NEW same-day/same-name siblings
+    with tempfile.TemporaryDirectory() as tmp:
+        root = Path(tmp)
+        lst = {"data": [dict(base, id="dupaaaa1"), dict(base, id="dupbbbb2")]}
+        diff = json.loads(run(["--root", str(root), "diff"], stdin_bytes=json.dumps(lst).encode()).stdout.decode() or "{}")
+        folders = [e["folder"] for e in diff.get("to_sync", [])]
+        check(len(folders) == 2 and len(set(folders)) == 2, "diff gives distinct folders to same-day/name siblings")
 
     print()
     if failures:
