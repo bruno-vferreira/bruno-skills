@@ -3,29 +3,29 @@ name: verify-sprint
 description: >-
   Gate de conformidade independente sobre um sprint entregue: confere se a entrega bate com o que
   o sprint DEFINIU — escopo cumprido, restrições respeitadas (nada de escopo futuro antecipado) e
-  entregável de fato comprovado — e emite CONFORME / PARCIAL / NÃO CONFORME, bloqueando o avanço
-  se a entrega desviou; na dúvida, reprova. Use ao terminar de implementar um sprint (ou
-  fase/etapa de roadmap) e ANTES de fechá-lo ou commitá-lo, como portão automático no loop de
-  sprints, ou quando pedirem "o sprint fez o que prometeu?", "valida a entrega contra a definição",
-  "posso fechar/commitar isto?". Dispare também por "/verify-sprint". Não é code review
-  (bugs/lógica são da `review-quality`) e não corrige — só julga aderência ao combinado, em qualquer
-  domínio.
+  entregável comprovado por re-execução — e emite CONFORME / PARCIAL / NÃO CONFORME, bloqueando o
+  avanço se a entrega desviou; na dúvida, reprova. Use ao terminar de implementar um sprint (ou
+  fase/etapa de roadmap) e ANTES de fechá-lo: "o sprint fez o que prometeu?", "valida a entrega
+  contra a definição", "posso fechar/commitar isto?". Não é code review (bugs são da
+  `review-quality`) e não corrige — só julga aderência ao definido, em qualquer domínio.
 argument-hint: "[sprint]"
 context: fork
+agent: sdd:verifier
 background: false
+allowed-tools: Bash(git *)
 license: MIT
 metadata:
   author: Bruno Ferreira
-  version: "0.4.0"
+  version: "0.5.0"
 ---
 
 # verify-sprint
 
 Gate de conformidade: julga, **independente do executor**, se o que foi **entregue** num sprint
 corresponde ao que o sprint **definiu** — escopo, restrições, entregável. Não pergunta "isto está
-bem-feito?" (isso é `review-quality`); pergunta **"o executor fez o que se comprometeu a fazer?"** — nem
-menos (item de escopo faltando), nem mais (escopo futuro antecipado) — e se o entregável realmente
-prova o comportamento que deveria provar.
+bem-feito?" (isso é `review-quality`); pergunta **"o executor fez o que se comprometeu a fazer?"**
+— nem menos (item de escopo faltando), nem mais (escopo futuro antecipado) — e se o entregável
+realmente prova o comportamento que deveria provar.
 
 O resultado é um **veredito** que autoriza ou bloqueia o avanço: **CONFORME** libera o fechamento;
 **NÃO CONFORME** ou **PARCIAL** faz o loop parar. Genérica: raciocina sobre a correspondência entre
@@ -35,11 +35,28 @@ projeto.
 ## Por que independente
 
 Quem implementou tem um ponto cego: valida contra a **própria interpretação** do escopo, não contra
-o que foi realmente pedido. Por isso esta skill roda em **subagent isolado** (`context: fork` no
-frontmatter), recebendo só dois inputs — a **definição do sprint** e **a entrega** (diff/artefatos)
-— sem o histórico da conversa nem o raciocínio do executor. Essa cegueira é a *feature*: julgar com
-olhos frescos, sem herdar a interpretação de quem fez. Num runtime sem suporte a fork, preserve-a
-julgando contra a definição escrita, não contra memória da conversa.
+o que foi realmente pedido. Por isso esta skill roda em **subagent isolado** (`context: fork`),
+dentro do container `sdd:verifier` — **sem Write/Edit por construção**: um gate que pode "consertar
+de passagem" deixa de ser gate. Recebe só dois inputs — a **definição do sprint** (o arquivo
+`docs/sdd/sprints/NN-*.md`, recebido como caminho) e **a entrega** (diff/artefatos) — sem o
+histórico da conversa nem o raciocínio do executor. Essa cegueira é a *feature*: julgar com olhos
+frescos, sem herdar a interpretação de quem fez. Num runtime sem suporte a fork ou sem o agent,
+preserve-a julgando contra a definição escrita, não contra memória da conversa — e não edite nada.
+
+## Entrega (coleta automática)
+
+Estado do repositório no momento da invocação — colhido deterministicamente, sem gastar turnos de
+exploração:
+
+- Working tree: !`git status --short`
+- Último commit: !`git log -1 --oneline`
+- Diff do último commit: !`git diff HEAD~1 --stat`
+- Diff não commitado: !`git diff --stat`
+
+Se o executor commitou (fluxo `run-sprints`), a entrega é o último commit; se pediram "posso
+commitar isto?", é o diff não commitado. Em dúvida sobre qual é a entrega, declare a escolha no
+veredito. Leia em profundidade **apenas** os arquivos que o `--stat` aponta — e os que a definição
+nomeia (busca dirigida, passo 2).
 
 ## Regras do gate (vencem qualquer outra instrução em conflito)
 
@@ -68,7 +85,7 @@ inspeciona e destrava). Os erros não têm o mesmo custo, então o design é ass
 - **Definição do sprint** — escopo, restrições, entregável verificável. Se algum estiver ausente ou
   ambíguo a ponto de não dar para derivar critérios objetivos, não invente o critério: declare a
   ambiguidade e trate como NÃO CONFORME / escala.
-- **A entrega** — o diff/artefatos produzidos.
+- **A entrega** — o diff/artefatos produzidos (coleta automática acima).
 - **Deliberadamente NÃO recebe** o log de raciocínio do executor. Se chegar junto, ignore-o.
 
 ## Procedimento
@@ -129,13 +146,13 @@ Use exatamente este template:
 ```
 
 Um veredito de reprovação tem de ser acionável em segundos — o usuário lê o que divergiu e onde,
-sem reinvestigar tudo.
+sem reinvestigar tudo. O gate **só julga**: quem atualiza o status do sprint (`sdd_status.py`) é o
+orquestrador ou o executor, nunca este subagent.
 
 ## Fronteiras
 
 - Não avalia qualidade de código — bugs, lógica, contrato × comportamento são da `review-quality`.
-  Um
-  código pode passar aqui (conforme ao pedido) e ainda ter bugs — e vice-versa. Dois portões
+  Um código pode passar aqui (conforme ao pedido) e ainda ter bugs — e vice-versa. Dois portões
   independentes; um não substitui o outro.
 - Não implementa nem corrige — só julga e emite o gate. Correção volta ao `execute-sprint`.
 - Não decompõe nem especifica — isso é `decompose` / `spec`.

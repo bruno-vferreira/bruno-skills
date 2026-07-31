@@ -22,12 +22,19 @@ browsable site later.
 │   │   └── skills/
 │   │       └── commit-message/
 │   │           └── SKILL.md     # the skill itself (Agent Skills format)
-│   ├── sdd/                     # a multi-skill plugin (7 spec-driven-development skills)
+│   ├── sdd/                     # a multi-skill plugin (6 spec-driven-development skills)
+│   │   ├── .claude-plugin/
+│   │   │   └── plugin.json
+│   │   ├── agents/              # subagent containers (sprint-executor, verifier, reviewer)
+│   │   ├── scripts/             # deterministic state keepers (tech_debt.py, sdd_status.py) + tests/
+│   │   └── skills/
+│   │       └── <spec, decompose, execute-sprint, verify-sprint, review-quality,
+│   │           run-sprints>/SKILL.md (+ assets/)
+│   ├── skill-lab/               # meta plugin: the harden-skill executable eval builder
 │   │   ├── .claude-plugin/
 │   │   │   └── plugin.json
 │   │   └── skills/
-│   │       └── <spec, decompose, execute-sprint, verify-sprint, review,
-│   │           run-sprints, harden-skill>/SKILL.md (+ assets/)
+│   │       └── harden-skill/SKILL.md (+ assets/)
 │   └── plaud/                   # a 2-skill plugin (Plaud MCP → local markdown + audio)
 │       ├── .claude-plugin/
 │       │   └── plugin.json
@@ -59,15 +66,21 @@ Some fields (e.g. `author`, `version`) also appear in `SKILL.md`'s `metadata` so
 skill is valid on its own under the Agent Skills standard. Those copies are a fallback —
 the canonical source in the table always wins in the generated index.
 
-The catalog currently holds three plugins:
+The catalog currently holds four plugins:
 
 - **`commit-message`** — a single skill that writes a
   [Conventional Commits](https://www.conventionalcommits.org) message from the staged git diff.
-- **`sdd`** — Spec-Driven Development: a 7-skill methodology (spec → decompose → execute →
-  verify → review), the `run-sprints` orchestrator (entry point via `spec`, from scratch, or via
-  `review-quality`, hardening existing code), and the `harden-skill` eval builder. Once installed, its
-  commands are namespaced as `/sdd:<skill>` (e.g. `/sdd:run-sprints`); the skills also trigger from
-  natural language.
+- **`sdd`** — Spec-Driven Development: a 6-skill methodology (spec → decompose → execute →
+  verify → review) with its state persisted to files (`docs/sdd/` for the spec, sprint plan and
+  status panel; `TECH_DEBT.md` for the backlog). The `run-sprints` orchestrator (entry point via
+  `spec`, from scratch, or via `review-quality`, hardening existing code) runs each sprint in an
+  isolated `sprint-executor` subagent; the two gates run as forks inside edit-less agent
+  containers (`verifier`, `reviewer`); deterministic scripts (`tech_debt.py`, `sdd_status.py`)
+  keep the backlog and the panel out of the model's token budget. Once installed, its commands are
+  namespaced as `/sdd:<skill>` (e.g. `/sdd:run-sprints`); the skills also trigger from natural
+  language.
+- **`skill-lab`** — the `harden-skill` eval builder: measures a skill's REAL lift over a
+  no-skill baseline with an executable fixture, a hidden oracle, and two compared arms.
 - **`plaud`** — syncs your [Plaud](https://www.plaud.ai) recordings to disk via the Plaud MCP:
   each recording becomes a markdown note (frontmatter + summary + topics + transcript) plus its
   `audio.mp3` (when the recording has audio), tracked by a checkpoint in `.plaud/`. Two skills — `sync` (incremental) and

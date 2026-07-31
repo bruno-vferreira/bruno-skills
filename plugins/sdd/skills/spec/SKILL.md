@@ -1,18 +1,17 @@
 ---
 name: spec
 description: >-
-  Transforma requisitos brutos e conversacionais numa especificação estável: confirma o
-  entendimento passo a passo, registra decisões com racional e caça lacunas antes de consolidar.
-  Use quando o usuário começa a descrever um projeto, funcionalidade ou sistema novo; quer
-  levantar ou organizar requisitos soltos; quer montar o escopo ou entender bem o problema antes
-  de implementar; ou avisa que vai mandar os requisitos aos poucos — mesmo sem a palavra
-  "especificação" ("me ajuda a levantar os requisitos", "monta o escopo disso"). Dispare também
-  por "/spec". Não escreve código nem decompõe em sprints — isso é da `decompose`.
+  Transforma requisitos brutos e conversacionais numa especificação estável, consolidada em
+  arquivo (docs/sdd/): confirma o entendimento passo a passo, registra decisões com racional e
+  caça lacunas antes de fechar. Use quando o usuário começa a descrever um projeto ou
+  funcionalidade nova, quer levantar ou organizar requisitos, ou montar o escopo antes de
+  implementar ("me ajuda a levantar os requisitos", "monta o escopo disso"). Não escreve código
+  nem decompõe em sprints — isso é da `decompose`.
 argument-hint: "[tema]"
 license: MIT
 metadata:
   author: Bruno Ferreira
-  version: "0.4.0"
+  version: "0.5.0"
 ---
 
 # spec
@@ -77,8 +76,11 @@ não declare "pronto" pela sensação: "cobrimos parsing, filtro e saída; falta
 linha malformada e onde grava a saída — define agora ou deixo default?" Se o usuário ainda vai
 mandar coisas, a completude não é sua para declarar.
 
-**6. Consolidar.** Quando o usuário sinalizar fechamento, produza o documento estruturado abaixo.
-Ele precisa ser autossuficiente — quem for decompor lê a spec, não reabre a conversa.
+**6. Consolidar em arquivo.** Quando o usuário sinalizar fechamento, grave o documento em
+`docs/sdd/spec-<tema>.md` (crie o diretório; siga a convenção do projeto se ele já tiver outra) e
+aponte o caminho no chat, com um resumo curto do que foi decidido. **O arquivo é o artefato
+canônico** — quem for decompor lê a spec, não reabre a conversa; depois de gravada, o histórico do
+levantamento pode ser limpo (`/clear`) sem perda de estado.
 
 ## Formato de saída
 
@@ -101,4 +103,4 @@ Notas de preenchimento:
 - Não implementa nada — se o usuário empurrar para "já começa a codar", registre a intenção técnica
   como decisão, mas não a execute.
 - Não faz plano de execução — entrega o contrato do *quê*, não o roteiro do *como*.
-- É a etapa de entendimento, anterior a tudo. Único produto: a especificação.
+- É a etapa de entendimento, anterior a tudo. Único produto: a especificação em `docs/sdd/`.

@@ -6,14 +6,13 @@ description: >-
   (não na leitura do código), um oráculo escondido que pontua, e dois braços rodados e comparados
   (com a skill × sem). Use para endurecer, estressar, avaliar ou validar de verdade uma skill,
   medir o lift ("a skill Z vale mesmo?", "melhora o resultado ou é só cerimônia?") ou descobrir
-  onde ela falha. Dispare também por "/harden-skill". Não cria a skill nem afina a descrição (isso
-  é de uma skill criadora de skills, como a skill-creator) — complementa-a com a medição executável
+  onde ela falha. Não cria a skill nem afina a descrição — complementa-a com a medição executável
   que ela não faz. Aplica-se a qualquer skill cuja saída seja verificável.
 argument-hint: "[skill-alvo]"
 license: MIT
 metadata:
   author: Bruno Ferreira
-  version: "0.4.0"
+  version: "0.1.0"
 ---
 
 # harden-skill
@@ -115,7 +114,7 @@ Exemplo de relatório final (com × sem a skill, com veredito) em
 
 - Não cria a skill nem afina descrição/gatilho — isso é de uma skill criadora de skills
   (`skill-creator`, quando disponível). Complementa: a medição executável que ela não faz.
-- Não corrige a skill sozinha — mede, aponta a falha, propõe melhoria; aplicar é edição (ou sprint
-  via `execute-sprint`).
+- Não corrige a skill sozinha — mede, aponta a falha, propõe melhoria; aplicar é edição (ou um
+  sprint via o plugin `sdd`, quando instalado).
 - Não substitui o eval de gatilho — o padrão (a descrição dispara no prompt certo) continua
   valendo; esta skill cobre o eixo que ele não cobre: o resultado vale?

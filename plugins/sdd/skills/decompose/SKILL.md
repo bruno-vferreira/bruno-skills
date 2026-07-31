@@ -1,49 +1,48 @@
 ---
 name: decompose
 description: >-
-  Quebra um corpo de trabalho — especificação (saída da `spec`), relatório de code review (saída
-  da `review-quality`) ou backlog de débito técnico (TECH_DEBT.md) — numa sequência de sprints: escopo
-  fechado, ordem justificada, dependências explícitas e entregável verificável, prontos para a
-  `execute-sprint`. Use para planejar, organizar ou dividir trabalho em fases/sprints: "monte o
-  roadmap", "divida isso em partes", "crie as sprints", "organize as correções", "montar sprint de
-  débito técnico" — mesmo sem a palavra "sprint". Dispare também por "/decompose". Não produz a
-  especificação, não executa os sprints nem faz o review que os origina — apenas decompõe e
+  Quebra um corpo de trabalho — especificação (saída da `spec`), relatório de review (saída da
+  `review-quality`) ou backlog de débito técnico (TECH_DEBT.md) — numa sequência de sprints
+  gravada em docs/sdd/sprints/: escopo fechado, ordem justificada, dependências explícitas e
+  entregável verificável, um arquivo por sprint, prontos para a `execute-sprint`. Use para
+  planejar, organizar ou dividir trabalho em fases/sprints: "monte o roadmap", "divida isso em
+  partes", "organize as correções". Não especifica, não executa nem revisa — só decompõe e
   sequencia, em qualquer domínio.
 argument-hint: "[fonte]"
 license: MIT
 metadata:
   author: Bruno Ferreira
-  version: "0.4.0"
+  version: "0.5.0"
 ---
 
 # decompose
 
 Transforma um corpo de trabalho a ser feito em um **plano de sprints**: unidades de escopo fechado,
 ordem justificada, dependências explícitas e, cada uma, um **entregável verificável** — a prova de
-aceite que diz quando o sprint terminou. Produz prompts de sprint prontos para a `execute-sprint`.
+aceite que diz quando o sprint terminou. Grava o plano em arquivos sob `docs/sdd/sprints/`, prontos
+para a `execute-sprint`.
 
 É a etapa de **planejamento**: corta e sequencia; não implementa (`execute-sprint`) e não julga
-qualidade (`review-quality`). Genérica: raciocina sobre escopo, dependência e verificabilidade — não sobre
-stack. Comandos concretos entram só na execução.
+qualidade (`review-quality`). Genérica: raciocina sobre escopo, dependência e verificabilidade —
+não sobre stack. Comandos concretos entram só na execução.
 
 ## A fonte é parâmetro
 
 A mesma operação serve a três entradas:
-- **Especificação** (saída da `spec`) → decompõe em **sprints de desenvolvimento**.
-- **Relatório de review** (saída da `review-quality`) → decompõe em **sprints de correção**.
+- **Especificação** (saída da `spec`, em `docs/sdd/spec-*.md`) → **sprints de desenvolvimento**.
+- **Relatório de review** (saída da `review-quality`) → **sprints de correção**.
 - **Backlog de débito técnico** (`TECH_DEBT.md`, alimentado por `execute-sprint` e
-  `review-quality`) →
-  decompõe os itens selecionados em **sprints de refatoração/correção**.
+  `review-quality`) → **sprints de refatoração/correção** dos itens selecionados.
 
 Mesmo procedimento nos três casos — o que muda é a entrada, não o método. Onde divergem, o texto
 abaixo marca "quando a fonte é spec / review / backlog".
 
-Fonte backlog **não decompõe o arquivo inteiro de uma vez**: apresente os itens abertos ao usuário
-primeiro (com o campo "escopo estimado" de cada um) e decomponha só os que ele selecionar — mesmo
-princípio de controle humano que `run-sprints` já aplica aos achados de review. Itens marcados
-como "pontual" no backlog raramente precisam de sprint próprio (a expectativa é que já tenham sido
-resolvidos incidentalmente, por `execute-sprint`, quando alguém voltou a mexer naquele arquivo);
-quem tipicamente chega até aqui são os marcados **amplo**.
+Fonte backlog **não decompõe o arquivo inteiro de uma vez**: liste os itens abertos com
+`python3 "${CLAUDE_PLUGIN_ROOT}/scripts/tech_debt.py" list`, apresente-os ao usuário (com o campo
+"escopo estimado" de cada um) e decomponha só os que ele selecionar — mesmo princípio de controle
+humano que `run-sprints` já aplica aos achados de review. Itens "pontuais" raramente precisam de
+sprint próprio (a expectativa é resolução incidental pela `execute-sprint` quando alguém voltar
+àquele arquivo); quem tipicamente chega aqui são os marcados **amplo**.
 
 ## Pré-condições
 
@@ -66,8 +65,7 @@ quem tipicamente chega até aqui são os marcados **amplo**.
    vira um sprint isolado — checkpoint limpo, rollback fácil. Não agrupe itens distintos para
    adiantar; o custo aparece na hora de reverter. Exceção: itens de backlog genuinamente
    acoplados (a mesma refatoração ampla toca as mesmas classes) podem formar um sprint só, desde
-   que a fatia continue verificável (princípio 2) — não é "um item, um sprint" de forma rígida
-   quando os itens são, na prática, a mesma mudança.
+   que a fatia continue verificável (princípio 2).
 
 4. **Ordem justificada, não arbitrária.** Dependências técnicas primeiro; entre itens
    independentes, risco/severidade (o mais grave/incerto cedo) e uma vitória rápida no começo
@@ -111,25 +109,30 @@ sinalize que o item precisa voltar à `spec` ou ao usuário antes de virar sprin
 sequência (princípio 4). Separe "fora de escopo / fases futuras" — inclusive itens que a própria
 fonte já marcou como "para depois"; eles não viram sprint.
 
-**6. Emitir os prompts.** Índice, um prompt por sprint, seção de fora de escopo. Fonte review: cada
-prompt referencia o achado que corrige, e o entregável prova que aquele bug específico sumiu — não
-só "os testes passam", mas que o cenário de falha do achado não ocorre mais.
+**6. Gravar o plano em arquivos.** O plano vive no repositório, não na conversa:
+- `docs/sdd/sprints/00-plano.md` — índice, sequência com justificativa, fora de escopo.
+- `docs/sdd/sprints/NN-<slug>.md` — um arquivo por sprint, começando com `# Sprint NN — <título>`
+  seguido de `Status: pendente` na linha seguinte (é essa linha que `sdd_status.py` mantém).
+- Após gravar, rode `python3 "${CLAUDE_PLUGIN_ROOT}/scripts/sdd_status.py" render` para gerar o
+  painel inicial (`docs/sdd/status.md`).
+
+No chat, apresente **só o índice** (tabela de sequência + justificativa + fora de escopo) e os
+caminhos dos arquivos — o conteúdo integral dos sprints está nos arquivos; não o duplique na
+conversa. Fonte review: cada arquivo de sprint referencia o achado que corrige, e o entregável
+prova que aquele bug específico sumiu — não só "os testes passam".
 
 ## Formato de saída
 
 Use o esqueleto em [`assets/sprint-plan-template.md`](assets/sprint-plan-template.md) como guia
-adaptável (ajuste as seções ao projeto): índice e
-sequência com dependências e justificativa, um bloco por sprint (contexto, objetivo, escopo,
-restrições, entregável verificável, commit), e a seção de fora de escopo / fases futuras.
-
-Se algum item da fonte for vago demais para virar entregável verificável, não force um sprint:
-liste-o em "fora de escopo" com nota de que precisa ser melhor especificado. Sinalizar a lacuna é
-resultado válido; inventar critério de aceite que a fonte não deu não é.
+adaptável para os dois tipos de arquivo (índice e sprint). Se algum item da fonte for vago demais
+para virar entregável verificável, não force um sprint: liste-o em "fora de escopo" no
+`00-plano.md` com nota de que precisa ser melhor especificado. Sinalizar a lacuna é resultado
+válido; inventar critério de aceite que a fonte não deu não é.
 
 ## Fronteiras
 
 - Não produz a especificação a partir de requisitos brutos — isso é da `spec`.
-- Não executa os sprints — isso é da `execute-sprint`, que consome os prompts emitidos aqui.
+- Não executa os sprints — isso é da `execute-sprint`, que consome os arquivos gravados aqui.
 - Não faz o review que origina sprints de correção — isso é da `review-quality`.
 - Não alimenta o `TECH_DEBT.md` — só o lê como fonte quando o usuário pedir. Quem registra itens
   ali é `execute-sprint` e `review-quality`, no curso do trabalho delas.

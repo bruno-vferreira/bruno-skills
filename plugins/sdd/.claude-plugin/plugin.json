@@ -1,8 +1,8 @@
 {
   "name": "sdd",
   "displayName": "SDD — Spec-Driven Development",
-  "description": "SDD (Spec-Driven Development / método de sprints) para Claude Code: especificar → decompor → executar com verificação → revisar. Skills genéricas (agnósticas de tecnologia) que encodam contrato antes de implementação, fatias pequenas e verificáveis, prova em vez de sensação e parar no vermelho. Inclui as primitivas spec, decompose e execute-sprint; os gates independentes verify-sprint (conformidade) e review-quality (qualidade), ambos em subagent isolado; o fluxo manual de orquestração run-sprints (do zero, via spec, ou sobre código existente, via review-quality); e a skill de medição executável harden-skill, que constrói um eval e mede o ganho real de uma skill sobre um baseline.",
-  "version": "0.4.0",
+  "description": "SDD (Spec-Driven Development / método de sprints) para Claude Code, com estado persistido em docs/sdd/ e backlog em TECH_DEBT.md: especificar → decompor → executar com verificação → revisar. Seis skills agnósticas de tecnologia — spec, decompose e execute-sprint; os gates verify-sprint (conformidade) e review-quality (qualidade), forks em containers de agent sem poder de edição; e a orquestração manual run-sprints, que roda cada sprint em subagent isolado (sprint-executor) com checkpoint humano e parada no vermelho. Scripts determinísticos (tech_debt.py, sdd_status.py) mantêm o backlog e o painel do ciclo fora do custo de tokens do modelo.",
+  "version": "0.5.0",
   "author": {
     "name": "Bruno Ferreira",
     "email": "bvferreira@hotmail.com"
@@ -20,6 +20,7 @@
     "verification",
     "workflow",
     "orchestration",
+    "subagents",
     "metodologia",
     "pt-br"
   ]

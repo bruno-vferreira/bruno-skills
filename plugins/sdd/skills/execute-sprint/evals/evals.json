@@ -18,7 +18,7 @@
       "id": "behavior-achado-fora-do-escopo",
       "type": "behavior",
       "prompt": "(durante o sprint) nota um bug pré-existente amplo, sem relação com o escopo, em outro módulo",
-      "expected": "Não corrige em silêncio nem descarta: registra em TECH_DEBT.md com escopo estimado 'amplo' e lista o item no resumo final."
+      "expected": "Não corrige em silêncio nem descarta: registra via tech_debt.py add com escopo estimado 'amplo' (nunca editando o TECH_DEBT.md à mão) e lista a linha de confirmação no resumo final."
     },
     {
       "id": "behavior-correcao-incidental-pontual",
