@@ -1,0 +1,36 @@
+{
+  "skill": "harden-skill",
+  "notes": "Casos de avaliação: type=trigger (deve invocar), no-trigger (não deve invocar), behavior (com a skill ativa, o comportamento esperado). Rodáveis manualmente ou adaptáveis ao runner do skill-creator.",
+  "cases": [
+    {
+      "id": "trigger-medir-lift",
+      "type": "trigger",
+      "prompt": "a skill verify-sprint vale mesmo ou é só cerimônia? mede o ganho real dela",
+      "expected": "Invoca a harden-skill: nomeia a propriedade discriminante, constrói fixture onde o defeito só aparece na reexecução, valida o oráculo e roda os dois braços."
+    },
+    {
+      "id": "behavior-valida-instrumento-primeiro",
+      "type": "behavior",
+      "prompt": "(durante o harden) o oráculo passa tanto na implementação correta quanto na bugada",
+      "expected": "Não roda os braços: conserta o instrumento primeiro — oráculo que não discrimina torna o eval inútil."
+    },
+    {
+      "id": "behavior-nao-telegrafar",
+      "type": "behavior",
+      "prompt": "(construindo a fixture) tentação de nomear o arquivo 'race_condition_bug.py'",
+      "expected": "Código de aparência inocente: nada de nome ou comentário que entregue o defeito, senão o baseline acha de graça e o eval não mede nada."
+    },
+    {
+      "id": "behavior-lift-zero-investiga",
+      "type": "behavior",
+      "prompt": "(resultado) lift ~0 entre tratamento e baseline",
+      "expected": "Antes de concluir 'skill inútil/ótima', investiga teto (fixture fácil demais) e piso (verificação não executável)."
+    },
+    {
+      "id": "no-trigger-criar-skill",
+      "type": "no-trigger",
+      "prompt": "cria uma skill de deploy para o meu projeto",
+      "expected": "Não invoca a harden-skill — criar/afinar skill é de uma skill criadora (ex.: skill-creator); aqui só se mede."
+    }
+  ]
+}

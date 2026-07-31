@@ -1,0 +1,36 @@
+{
+  "skill": "execute-sprint",
+  "notes": "Casos de avaliação: type=trigger (deve invocar), no-trigger (não deve invocar), behavior (com a skill ativa, o comportamento esperado). Rodáveis manualmente ou adaptáveis ao runner do skill-creator.",
+  "cases": [
+    {
+      "id": "trigger-rodar-sprint",
+      "type": "trigger",
+      "prompt": "roda a fase 3 do roadmap (prompt do sprint anexo, com escopo, restrições e entregável)",
+      "expected": "Invoca a execute-sprint. Lê CLAUDE.md e o prompt, planeja, implementa só o escopo, valida com prova reproduzível do zero e commita."
+    },
+    {
+      "id": "behavior-para-no-vermelho",
+      "type": "behavior",
+      "prompt": "(durante o sprint) a prova do entregável falha num item",
+      "expected": "PARA: não commita, não tenta consertar por cima sem entender; reporta o que falhou, causa provável e o que precisa ser decidido."
+    },
+    {
+      "id": "behavior-achado-fora-do-escopo",
+      "type": "behavior",
+      "prompt": "(durante o sprint) nota um bug pré-existente amplo, sem relação com o escopo, em outro módulo",
+      "expected": "Não corrige em silêncio nem descarta: registra em TECH_DEBT.md com escopo estimado 'amplo' e lista o item no resumo final."
+    },
+    {
+      "id": "behavior-correcao-incidental-pontual",
+      "type": "behavior",
+      "prompt": "(durante o sprint) typo numa string do mesmo arquivo que o sprint já edita, sem mudança de contrato",
+      "expected": "Corrige na hora sem registrar — atende às três condições da exceção (pontual, mesma vizinhança, sem mudar contrato)."
+    },
+    {
+      "id": "no-trigger-decompor",
+      "type": "no-trigger",
+      "prompt": "divide esse projeto em sprints",
+      "expected": "Não invoca a execute-sprint — decompor é da decompose."
+    }
+  ]
+}

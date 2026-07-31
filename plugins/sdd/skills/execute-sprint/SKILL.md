@@ -1,19 +1,19 @@
 ---
 name: execute-sprint
 description: >-
-  Executa um único sprint de desenvolvimento de forma disciplinada: planeja antes de agir,
-  implementa apenas o escopo do sprint, valida o entregável com prova objetiva e faz commit —
-  parando e reportando se a validação falhar. Achados fora do escopo (bugs pré-existentes, código
-  fora do padrão) são registrados em TECH_DEBT.md em vez de corrigidos em silêncio ou descartados —
-  correção incidental só quando pontual e na mesma vizinhança do sprint. Use sempre que o usuário
-  for executar, rodar ou implementar um sprint, uma fase, uma etapa de um plano/roadmap, ou um item
-  de uma lista de tarefas com escopo e critério de aceite definidos — mesmo que ele não diga a
-  palavra "sprint". Aplica-se a qualquer domínio (código, infraestrutura, documentação, dados).
-  Aplica-se também a sprints de correção originados de code review.
+  Executa um único sprint de forma disciplinada: planeja antes de agir, implementa apenas o escopo
+  do sprint, valida o entregável com prova objetiva reproduzível e faz commit — parando e
+  reportando se a validação falhar. Achados fora do escopo são registrados em TECH_DEBT.md em vez
+  de corrigidos em silêncio ou descartados. Use sempre que o usuário for executar, rodar ou
+  implementar um sprint, uma fase, uma etapa de um plano/roadmap, ou um item de tarefa com escopo
+  e critério de aceite definidos — mesmo sem a palavra "sprint" — inclusive sprints de correção
+  originados de code review. Aplica-se a qualquer domínio (código, infraestrutura, documentação,
+  dados).
+argument-hint: "[sprint]"
 license: MIT
 metadata:
   author: Bruno Ferreira
-  version: "0.2.0"
+  version: "0.4.0"
 ---
 
 # execute-sprint
@@ -43,9 +43,13 @@ planejar. Não assuma convenções de memória — comando de teste, estilo de c
 limites são propriedade do projeto e mudam entre projetos.
 
 **2. Planejar antes de agir.** Produza um plano do que este sprint vai fazer — arquivos, abordagem,
-como o entregável será provado. Quando o ambiente suportar, apresente para aprovação antes de
-editar. Se houver decisão de design com mais de uma opção viável, não decida sozinho: apresente as
-opções com trade-offs e aguarde a escolha — decisão de design é pergunta, não palpite.
+como o entregável será provado. Em sessão interativa, apresente-o para aprovação antes de editar
+(via plan mode, se disponível). Sob orquestração da `run-sprints`, a aprovação do plano de sprints
+já cobre este passo — não pare para reaprovar cada sprint. Em ambos os casos, decisão de design com
+mais de uma opção viável não se decide sozinho: apresente as opções com trade-offs e aguarde a
+escolha — decisão de design é pergunta, não palpite. E se o próprio prompt do sprint tiver uma
+inconsistência, sinalize para corrigir o documento na origem — não improvise um contorno que
+mascara o defeito.
 
 **3. Implementar apenas o escopo do sprint.** Nada além — não antecipe trabalho de sprints futuros,
 nem para "adiantar" nem para fazer uma verificação passar. Se cumprir o escopo genuinamente exigir
@@ -85,19 +89,17 @@ agora" será reprovada lá.
 **5. Checkpoint — decidir avançar.** Compare o resultado com cada item do entregável.
 - **Todos os itens passaram** → resumo curto do que foi feito e do resultado das checagens, e
   **commit** com mensagem descritiva referenciando o sprint. Se este sprint veio de um item do
-  `TECH_DEBT.md` (via `decompose` com fonte backlog), risque o item na tabela "Itens abertos" e
-  mova para "Itens resolvidos" com a referência do commit — o backlog só é confiável se fecha o
-  que resolveu, senão acumula itens já corrigidos e ninguém confia mais nele.
+  `TECH_DEBT.md` (via `decompose` com fonte backlog), mova o item da tabela "Itens abertos" para
+  "Itens resolvidos", com a referência do commit — o backlog só é confiável se fecha o que
+  resolveu, senão acumula itens já corrigidos e ninguém confia mais nele.
 - **Qualquer item falhou** → **PARE.** Não commite, não avance, não tente "consertar por cima" sem
   entender. Reporte com clareza: o que falhou, causa provável, o que precisa ser decidido ou
   corrigido. Aguarde. Não mexa no `TECH_DEBT.md` — o item continua aberto até de fato resolvido.
 
 **6. Não gerar resumo persistente paralelo.** Não crie arquivo de "memória" ou handoff sobre o que
-*este* sprint fez — o estado é o commit + os arquivos, a próxima execução relê do repositório. Isso
-não conflita com o passo 3: `TECH_DEBT.md` não resume o sprint, registra achados que **não são**
-deste sprint — é backlog de trabalho futuro, não handoff do trabalho atual. Uma decisão de design
-nova sobre o que foi implementado vai em `CLAUDE.md`/ADR; um achado fora do escopo vai em
-`TECH_DEBT.md`; nenhum dos dois é um resumo solto da execução.
+*este* sprint fez — o estado é o commit + os arquivos, a próxima execução relê do repositório. Uma
+decisão de design nova vai em `CLAUDE.md`/ADR; achado fora do escopo vai em `TECH_DEBT.md` (passo
+3); nenhum dos dois é resumo da execução.
 
 ## Formato de saída
 
@@ -109,32 +111,13 @@ nova sobre o que foi implementado vai em `CLAUDE.md`/ADR; um achado fora do esco
 - **Nenhum artefato de memória** paralelo aos documentos do projeto — `TECH_DEBT.md` é backlog, não
   memória de execução.
 
-## Princípios (quando o roteiro não cobrir o caso)
-
-- **Escopo fechado** — implemente o sprint, nada além.
-- **Achado não é descarte nem correção automática** — fora do escopo e pontual pode ser corrigido
-  na hora (regras no passo 3); fora do escopo e amplo é sempre `TECH_DEBT.md`, nunca "já que
-  encontrei, aproveito e arrumo".
-- **Prova, não sensação** — o entregável define a evidência; "parece pronto" não é aceite.
-- **Parar no vermelho** — falha de validação interrompe e reporta; não se segue por cima.
-- **Planejar antes de agir** — decisão de design vira pergunta, não suposição.
-- **Corrigir na origem** — se o próprio prompt/plano tiver uma inconsistência, sinalize para
-  corrigir o documento, não improvise um contorno que mascara o defeito.
-- **Genérica** — nenhuma ferramenta ou linguagem embutida; o projeto pluga isso via `CLAUDE.md`.
-
 ## Fronteiras
 
 Executa **um** sprint por invocação. Fora disso:
 - Não decompõe um projeto em sprints — isso é `decompose`.
-- Não audita código em busca de bugs — isso é `review`.
+- Não audita código em busca de bugs — isso é `review-quality`.
 - Não é o juiz independente de conformidade. A auto-verificação daqui ("rodei a prova e passou") é
   do executor; o julgamento independente é da `verify-sprint`, um subagent cego ao raciocínio do
   executor, que atua como gate depois desta skill.
-- Não orquestra múltiplos sprints — isso é das skills de orquestração (`build-project` /
-  `review-and-fix`), que chamam esta uma vez por sprint.
-
-## Variantes por tecnologia
-
-Genérica por decisão. Se surgirem variantes por stack, cada uma entra como
-`references/<tecnologia>.md` descrevendo os comandos de validação e commit daquela tecnologia —
-lida sob demanda, núcleo permanece idêntico.
+- Não orquestra múltiplos sprints — isso é da skill de orquestração `run-sprints`, que chama esta
+  uma vez por sprint.

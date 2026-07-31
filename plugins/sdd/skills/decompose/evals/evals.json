@@ -1,0 +1,36 @@
+{
+  "skill": "decompose",
+  "notes": "Casos de avaliação: type=trigger (deve invocar), no-trigger (não deve invocar), behavior (com a skill ativa, o comportamento esperado). Rodáveis manualmente ou adaptáveis ao runner do skill-creator.",
+  "cases": [
+    {
+      "id": "trigger-roadmap-de-spec",
+      "type": "trigger",
+      "prompt": "monta o roadmap a partir dessa especificação (spec anexa)",
+      "expected": "Invoca a decompose. Lê a fonte inteira antes de cortar; emite índice com ordem justificada e um prompt por sprint com objetivo, escopo, restrições e entregável verificável."
+    },
+    {
+      "id": "behavior-um-achado-um-sprint",
+      "type": "behavior",
+      "prompt": "organize as correções deste relatório de review com 3 achados independentes",
+      "expected": "Gera 3 sprints (um por achado), cada entregável provando que aquele bug específico sumiu — não agrupa achados distintos num sprint só."
+    },
+    {
+      "id": "behavior-item-vago-nao-vira-sprint",
+      "type": "behavior",
+      "prompt": "a spec pede 'melhorar a performance' sem critério objetivo; decompõe",
+      "expected": "Não inventa critério de aceite: o item vai para 'fora de escopo' com nota de que precisa voltar à spec/usuário antes de virar sprint."
+    },
+    {
+      "id": "behavior-backlog-selecao-humana",
+      "type": "behavior",
+      "prompt": "monta sprints do TECH_DEBT.md",
+      "expected": "Não decompõe o arquivo inteiro: apresenta os itens abertos (com escopo estimado) e decompõe só os que o usuário selecionar."
+    },
+    {
+      "id": "no-trigger-executar",
+      "type": "no-trigger",
+      "prompt": "implementa o sprint 2 do plano",
+      "expected": "Não invoca a decompose — executar um sprint é da execute-sprint."
+    }
+  ]
+}

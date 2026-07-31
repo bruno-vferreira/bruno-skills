@@ -1,0 +1,36 @@
+{
+  "skill": "verify-sprint",
+  "notes": "Casos de avaliação: type=trigger (deve invocar), no-trigger (não deve invocar), behavior (com a skill ativa, o comportamento esperado). Os behaviors medem recall (pegar desvio) E precisão (aceitar entrega honesta). Rodáveis manualmente ou adaptáveis ao runner do skill-creator.",
+  "cases": [
+    {
+      "id": "behavior-escopo-faltando",
+      "type": "behavior",
+      "prompt": "definição promete flag --dry-run; a entrega não a contém em lugar nenhum",
+      "expected": "Busca dirigida pelo item nomeado, detecta 'nomeado-mas-ausente' e emite NÃO CONFORME ou PARCIAL com evidência por critério."
+    },
+    {
+      "id": "behavior-escopo-antecipado",
+      "type": "behavior",
+      "prompt": "entrega implementa tudo do sprint 2 E adianta a autenticação prevista para o sprint 4",
+      "expected": "Reprova por excesso: escopo futuro antecipado é não-conformidade tão reprovável quanto a falta — 'código extra' não é bônus."
+    },
+    {
+      "id": "behavior-prova-com-estado-previo",
+      "type": "behavior",
+      "prompt": "o teste do entregável passa, mas só por causa de um arquivo deixado por execução anterior",
+      "expected": "Re-executa a prova do estado limpo (não apenas lê o diff), a prova falha, e o veredito reprova — raciocinar sobre a prova não é verificá-la."
+    },
+    {
+      "id": "behavior-entrega-honesta",
+      "type": "behavior",
+      "prompt": "entrega completa e correta, prova re-executável que exercita o comportamento-alvo",
+      "expected": "CONFORME, com evidência por critério — o gate mede precisão também; reprovar tudo é tão inútil quanto aprovar tudo."
+    },
+    {
+      "id": "no-trigger-qualidade",
+      "type": "no-trigger",
+      "prompt": "esse código tem bugs? faz um code review",
+      "expected": "Não invoca a verify-sprint — qualidade/bugs é da review-quality; aqui só se julga aderência ao definido."
+    }
+  ]
+}

@@ -1,20 +1,19 @@
 ---
 name: decompose
 description: >-
-  Quebra um corpo de trabalho — uma especificação (saída da `spec`), um relatório de code review
-  (saída da `review`) ou o backlog de débito técnico (TECH_DEBT.md) — em uma sequência de sprints:
-  unidades de escopo fechado, ordem justificada, dependências explícitas e, cada uma, um entregável
-  verificável. Emite um índice e um prompt de sprint por unidade, prontos para a `execute-sprint`.
-  A fonte é parâmetro: spec vira sprints de desenvolvimento, review vira sprints de correção,
-  backlog vira sprints de refatoração — mesma operação. Use para planejar, organizar ou dividir
-  trabalho em fases/sprints, ou "montar sprint de débito técnico". Dispare também por "/decompose"
-  e "monte o roadmap", "divida isso em partes", "crie as sprints", "organize as correções", mesmo
-  sem a palavra "sprint". Não produz a especificação, não executa os sprints nem faz o review que
-  os origina — apenas decompõe e sequencia. Aplica-se a qualquer domínio.
+  Quebra um corpo de trabalho — especificação (saída da `spec`), relatório de code review (saída
+  da `review-quality`) ou backlog de débito técnico (TECH_DEBT.md) — numa sequência de sprints: escopo
+  fechado, ordem justificada, dependências explícitas e entregável verificável, prontos para a
+  `execute-sprint`. Use para planejar, organizar ou dividir trabalho em fases/sprints: "monte o
+  roadmap", "divida isso em partes", "crie as sprints", "organize as correções", "montar sprint de
+  débito técnico" — mesmo sem a palavra "sprint". Dispare também por "/decompose". Não produz a
+  especificação, não executa os sprints nem faz o review que os origina — apenas decompõe e
+  sequencia, em qualquer domínio.
+argument-hint: "[fonte]"
 license: MIT
 metadata:
   author: Bruno Ferreira
-  version: "0.2.0"
+  version: "0.4.0"
 ---
 
 # decompose
@@ -24,15 +23,16 @@ ordem justificada, dependências explícitas e, cada uma, um **entregável verif
 aceite que diz quando o sprint terminou. Produz prompts de sprint prontos para a `execute-sprint`.
 
 É a etapa de **planejamento**: corta e sequencia; não implementa (`execute-sprint`) e não julga
-qualidade (`review`). Genérica: raciocina sobre escopo, dependência e verificabilidade — não sobre
+qualidade (`review-quality`). Genérica: raciocina sobre escopo, dependência e verificabilidade — não sobre
 stack. Comandos concretos entram só na execução.
 
 ## A fonte é parâmetro
 
 A mesma operação serve a três entradas:
 - **Especificação** (saída da `spec`) → decompõe em **sprints de desenvolvimento**.
-- **Relatório de review** (saída da `review`) → decompõe em **sprints de correção**.
-- **Backlog de débito técnico** (`TECH_DEBT.md`, alimentado por `execute-sprint` e `review`) →
+- **Relatório de review** (saída da `review-quality`) → decompõe em **sprints de correção**.
+- **Backlog de débito técnico** (`TECH_DEBT.md`, alimentado por `execute-sprint` e
+  `review-quality`) →
   decompõe os itens selecionados em **sprints de refatoração/correção**.
 
 Mesmo procedimento nos três casos — o que muda é a entrada, não o método. Onde divergem, o texto
@@ -40,7 +40,7 @@ abaixo marca "quando a fonte é spec / review / backlog".
 
 Fonte backlog **não decompõe o arquivo inteiro de uma vez**: apresente os itens abertos ao usuário
 primeiro (com o campo "escopo estimado" de cada um) e decomponha só os que ele selecionar — mesmo
-princípio de controle humano que `review-and-fix` já aplica aos achados de review. Itens marcados
+princípio de controle humano que `run-sprints` já aplica aos achados de review. Itens marcados
 como "pontual" no backlog raramente precisam de sprint próprio (a expectativa é que já tenham sido
 resolvidos incidentalmente, por `execute-sprint`, quando alguém voltou a mexer naquele arquivo);
 quem tipicamente chega até aqui são os marcados **amplo**.
@@ -117,7 +117,8 @@ só "os testes passam", mas que o cenário de falha do achado não ocorre mais.
 
 ## Formato de saída
 
-Use o esqueleto em [`assets/sprint-plan-template.md`](assets/sprint-plan-template.md): índice e
+Use o esqueleto em [`assets/sprint-plan-template.md`](assets/sprint-plan-template.md) como guia
+adaptável (ajuste as seções ao projeto): índice e
 sequência com dependências e justificativa, um bloco por sprint (contexto, objetivo, escopo,
 restrições, entregável verificável, commit), e a seção de fora de escopo / fases futuras.
 
@@ -129,14 +130,8 @@ resultado válido; inventar critério de aceite que a fonte não deu não é.
 
 - Não produz a especificação a partir de requisitos brutos — isso é da `spec`.
 - Não executa os sprints — isso é da `execute-sprint`, que consome os prompts emitidos aqui.
-- Não faz o review que origina sprints de correção — isso é da `review`.
+- Não faz o review que origina sprints de correção — isso é da `review-quality`.
 - Não alimenta o `TECH_DEBT.md` — só o lê como fonte quando o usuário pedir. Quem registra itens
-  ali é `execute-sprint` e `review`, no curso do trabalho delas.
-- Não verifica conformidade nem qualidade — `verify-sprint` julga aderência, `review` julga
-  qualidade. Aqui só se decompõe e sequencia.
-
-## Variantes por tecnologia
-
-Agnóstica por decisão: raciocinar sobre escopo, dependência e verificabilidade não muda entre
-Terraform, Python ou uma migração de dados. Se surgir necessidade de guia específico (o que é uma
-"fatia verificável" em tal stack), entra como `references/<tecnologia>.md`, lido sob demanda.
+  ali é `execute-sprint` e `review-quality`, no curso do trabalho delas.
+- Não verifica conformidade nem qualidade — `verify-sprint` julga aderência, `review-quality`
+  julga qualidade. Aqui só se decompõe e sequencia.

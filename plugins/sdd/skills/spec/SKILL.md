@@ -1,20 +1,18 @@
 ---
 name: spec
 description: >-
-  Dispare com "/spec" e sempre que o usuário quiser definir O QUE construir antes de partir para o
-  código. Use quando ele: começa a descrever um projeto, funcionalidade ou sistema novo; pede para
-  levantar ou organizar requisitos ainda soltos; quer montar o escopo ou fechar o contrato do que
-  será construído; quer entender bem o problema antes de implementar; recebeu requisitos vagos e
-  quer transformá-los numa spec, apontando ambiguidades; ou avisa que vai mandar os requisitos aos
-  poucos. Vale mesmo sem a palavra "especificação" — reconheça a intenção por trás de frases como
-  "me ajuda a levantar os requisitos", "quero entender antes de codar", "monta o escopo disso". A
-  skill é conversacional: confirma o entendimento passo a passo, registra decisões com o racional,
-  caça lacunas e consolida um documento de especificação estável. NÃO escreve código, não planeja
-  execução e não decompõe em sprints — isso é da `decompose`.
+  Transforma requisitos brutos e conversacionais numa especificação estável: confirma o
+  entendimento passo a passo, registra decisões com racional e caça lacunas antes de consolidar.
+  Use quando o usuário começa a descrever um projeto, funcionalidade ou sistema novo; quer
+  levantar ou organizar requisitos soltos; quer montar o escopo ou entender bem o problema antes
+  de implementar; ou avisa que vai mandar os requisitos aos poucos — mesmo sem a palavra
+  "especificação" ("me ajuda a levantar os requisitos", "monta o escopo disso"). Dispare também
+  por "/spec". Não escreve código nem decompõe em sprints — isso é da `decompose`.
+argument-hint: "[tema]"
 license: MIT
 metadata:
   author: Bruno Ferreira
-  version: "0.2.0"
+  version: "0.4.0"
 ---
 
 # spec
@@ -42,23 +40,6 @@ sinalizar.
 - Requisitos do usuário — podem chegar incrementalmente, em várias mensagens. Se ele disser "vou
   mandar aos poucos", a spec fica **aberta** até o sinal de fechamento.
 - Nenhuma dependência de ferramenta — genérica, só raciocina e registra.
-
-## Princípios
-
-1. **Entender antes de fazer.** Nenhum código ou plano de execução aqui. Se o usuário descreve uma
-   solução técnica, capture como decisão — não a implemente.
-2. **Confirmar, não presumir.** Reflita de volta cada bloco de requisito ("anotado: X, Y, Z") para
-   o usuário corrigir na hora. Suposição não confirmada é dívida que vence na decomposição.
-3. **Decisão registrada é decisão rastreável.** Toda escolha relevante vira decisão anotada com o
-   porquê. Havendo alternativas, mostre os trade-offs e deixe o usuário escolher; se ele delegar,
-   assuma um default sensato e registre-o explicitamente como tal. Nenhuma escolha invisível.
-4. **Incremental por padrão.** Não declare "pronto" por conta própria enquanto o usuário estiver
-   alimentando requisitos — fechar cedo é o mesmo erro de despejar a spec completa, só distribuído
-   no tempo.
-5. **Lacuna é risco.** Cace ativamente casos de borda, formatos de entrada/saída, restrições,
-   estado, ambientes, o que não foi dito. Cada lacuna vira **pergunta** ou **default registrado
-   como decisão** — nunca um buraco silencioso.
-6. **Genérica.** Sem ferramentas ou stacks embutidas.
 
 ## Procedimento
 
@@ -101,7 +82,8 @@ Ele precisa ser autossuficiente — quem for decompor lê a spec, não reabre a 
 
 ## Formato de saída
 
-Use o esqueleto em [`assets/spec-template.md`](assets/spec-template.md). Estrutura mínima:
+Use o esqueleto em [`assets/spec-template.md`](assets/spec-template.md) como guia adaptável — não
+é formulário rígido. Estrutura mínima:
 visão geral, requisitos (funcionais/não-funcionais), decisões com racional e origem, contrato/
 interface (quando houver), restrições e não-objetivos, pontos em aberto.
 
@@ -120,9 +102,3 @@ Notas de preenchimento:
   como decisão, mas não a execute.
 - Não faz plano de execução — entrega o contrato do *quê*, não o roteiro do *como*.
 - É a etapa de entendimento, anterior a tudo. Único produto: a especificação.
-
-## Variantes por tecnologia
-
-Agnóstica por decisão: capturar intenção, decisão e completude não muda entre domínios. Se surgir
-necessidade de guia específico (o que costuma virar lacuna em tal área), entra como
-`references/<tema>.md`, lido sob demanda.
