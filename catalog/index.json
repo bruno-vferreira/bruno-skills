@@ -95,7 +95,7 @@
         "name": "Bruno Ferreira"
       },
       "category": "development",
-      "description": "Quebra um corpo de trabalho — especificação (saída da `spec`), relatório de code review (saída da `review-quality`) ou backlog de débito técnico (TECH_DEBT.md) — numa sequência de sprints: escopo fechado, ordem justificada, dependências explícitas e entregável verificável, prontos para a `execute-sprint`. Use para planejar, organizar ou dividir trabalho em fases/sprints: \"monte o roadmap\", \"divida isso em partes\", \"crie as sprints\", \"organize as correções\", \"montar sprint de débito técnico\" — mesmo sem a palavra \"sprint\". Dispare também por \"/decompose\". Não produz a especificação, não executa os sprints nem faz o review que os origina — apenas decompõe e sequencia, em qualquer domínio.",
+      "description": "Quebra um corpo de trabalho — especificação (saída da `spec`), relatório de review (saída da `review-quality`) ou backlog de débito técnico (TECH_DEBT.md) — numa sequência de sprints gravada em docs/sdd/sprints/: escopo fechado, ordem justificada, dependências explícitas e entregável verificável, um arquivo por sprint, prontos para a `execute-sprint`. Use para planejar, organizar ou dividir trabalho em fases/sprints: \"monte o roadmap\", \"divida isso em partes\", \"organize as correções\". Não especifica, não executa nem revisa — só decompõe e sequencia, em qualquer domínio.",
       "homepage": "https://github.com/bruno-vferreira/bruno-skills",
       "id": "sdd/decompose",
       "keywords": [
@@ -108,6 +108,7 @@
         "verification",
         "workflow",
         "orchestration",
+        "subagents",
         "metodologia",
         "pt-br"
       ],
@@ -117,7 +118,7 @@
       "plugin": "sdd",
       "repository": "https://github.com/bruno-vferreira/bruno-skills",
       "source": "./plugins/sdd",
-      "version": "0.4.0"
+      "version": "0.5.0"
     },
     {
       "author": {
@@ -125,7 +126,7 @@
         "name": "Bruno Ferreira"
       },
       "category": "development",
-      "description": "Executa um único sprint de forma disciplinada: planeja antes de agir, implementa apenas o escopo do sprint, valida o entregável com prova objetiva reproduzível e faz commit — parando e reportando se a validação falhar. Achados fora do escopo são registrados em TECH_DEBT.md em vez de corrigidos em silêncio ou descartados. Use sempre que o usuário for executar, rodar ou implementar um sprint, uma fase, uma etapa de um plano/roadmap, ou um item de tarefa com escopo e critério de aceite definidos — mesmo sem a palavra \"sprint\" — inclusive sprints de correção originados de code review. Aplica-se a qualquer domínio (código, infraestrutura, documentação, dados).",
+      "description": "Executa um único sprint de forma disciplinada: planeja antes de agir, implementa apenas o escopo do sprint, valida o entregável com prova objetiva reproduzível e faz commit — parando e reportando se a validação falhar. Achados fora do escopo são registrados em TECH_DEBT.md em vez de corrigidos em silêncio ou descartados. Use ao executar, rodar ou implementar um sprint, uma fase ou etapa de um plano/roadmap, ou um item com escopo e critério de aceite definidos — inclusive sprints de correção vindos de code review. Qualquer domínio (código, infra, documentação, dados).",
       "homepage": "https://github.com/bruno-vferreira/bruno-skills",
       "id": "sdd/execute-sprint",
       "keywords": [
@@ -138,6 +139,7 @@
         "verification",
         "workflow",
         "orchestration",
+        "subagents",
         "metodologia",
         "pt-br"
       ],
@@ -147,7 +149,7 @@
       "plugin": "sdd",
       "repository": "https://github.com/bruno-vferreira/bruno-skills",
       "source": "./plugins/sdd",
-      "version": "0.4.0"
+      "version": "0.5.0"
     },
     {
       "author": {
@@ -155,37 +157,7 @@
         "name": "Bruno Ferreira"
       },
       "category": "development",
-      "description": "Constrói um eval EXECUTÁVEL para uma skill e mede o ganho REAL dela sobre um baseline sem a skill: uma fixture pequena e auto-contida onde o defeito só aparece na REEXECUÇÃO independente (não na leitura do código), um oráculo escondido que pontua, e dois braços rodados e comparados (com a skill × sem). Use para endurecer, estressar, avaliar ou validar de verdade uma skill, medir o lift (\"a skill Z vale mesmo?\", \"melhora o resultado ou é só cerimônia?\") ou descobrir onde ela falha. Dispare também por \"/harden-skill\". Não cria a skill nem afina a descrição (isso é de uma skill criadora de skills, como a skill-creator) — complementa-a com a medição executável que ela não faz. Aplica-se a qualquer skill cuja saída seja verificável.",
-      "homepage": "https://github.com/bruno-vferreira/bruno-skills",
-      "id": "sdd/harden-skill",
-      "keywords": [
-        "sprints",
-        "spec",
-        "spec-driven-development",
-        "sdd",
-        "decompose",
-        "code-review",
-        "verification",
-        "workflow",
-        "orchestration",
-        "metodologia",
-        "pt-br"
-      ],
-      "license": "MIT",
-      "name": "harden-skill",
-      "path": "./plugins/sdd/skills/harden-skill/SKILL.md",
-      "plugin": "sdd",
-      "repository": "https://github.com/bruno-vferreira/bruno-skills",
-      "source": "./plugins/sdd",
-      "version": "0.4.0"
-    },
-    {
-      "author": {
-        "email": "bvferreira@hotmail.com",
-        "name": "Bruno Ferreira"
-      },
-      "category": "development",
-      "description": "Audita código, configuração ou documentação em busca do que linters e validadores não pegam: divergências entre o contrato (schema, README, spec) e o comportamento real, bugs de lógica, suposições não verificadas, inconsistências entre camadas. Produz um relatório de achados priorizados por severidade — com cenário de falha concreto e correção sugerida — e registra também o que está correto. O escopo é parâmetro: o diff de um sprint (mini review) ou o repositório inteiro. Use sempre que o usuário pedir uma revisão, um code review, uma auditoria, uma checagem de qualidade, ou perguntar \"isto está correto? está bem-feito?\" — e ao final de um sprint, sobre o que acabou de ser implementado. Não corrige os achados nem verifica conformidade ao sprint (isso é da `verify-sprint`) — julga qualidade, em qualquer domínio.",
+      "description": "Audita código, configuração ou documentação em busca do que linters e validadores não pegam: divergências entre o contrato (schema, README, spec) e o comportamento real, bugs de lógica, suposições não verificadas, inconsistências entre camadas. Produz relatório de achados priorizados por severidade — com cenário de falha concreto e correção sugerida — e registra o que está correto. O escopo é parâmetro: o diff de um sprint (mini review) ou o repositório inteiro. Use quando pedirem uma revisão, um code review, uma auditoria ou \"isto está correto? está bem-feito?\". Não corrige os achados nem verifica conformidade ao sprint (isso é da `verify-sprint`) — julga qualidade, em qualquer domínio.",
       "homepage": "https://github.com/bruno-vferreira/bruno-skills",
       "id": "sdd/review-quality",
       "keywords": [
@@ -198,6 +170,7 @@
         "verification",
         "workflow",
         "orchestration",
+        "subagents",
         "metodologia",
         "pt-br"
       ],
@@ -207,7 +180,7 @@
       "plugin": "sdd",
       "repository": "https://github.com/bruno-vferreira/bruno-skills",
       "source": "./plugins/sdd",
-      "version": "0.4.0"
+      "version": "0.5.0"
     },
     {
       "author": {
@@ -215,7 +188,7 @@
         "name": "Bruno Ferreira"
       },
       "category": "development",
-      "description": "Orquestra o método de sprints ponta a ponta, a partir de um de dois pontos de entrada: do zero (`spec` → `decompose` gera sprints de desenvolvimento) ou sobre um corpo de trabalho existente que precisa de correção (`review-quality` em escopo completo → achados aprovados pelo usuário → `decompose` gera sprints de correção). Dali em diante, por sprint: `execute-sprint` → `verify-sprint` como GATE → mini review, com checkpoint humano em cada fronteira e fechamento verificado. Fluxo de alto impacto e longa duração — roda apenas via \"/run-sprints\" explícito; as primitivas continuam auto-invocáveis avulsas para uso pontual. Agnóstica de domínio e tecnologia.",
+      "description": "Orquestra o método SDD ponta a ponta com estado persistido em docs/sdd/, a partir de um de dois pontos de entrada: do zero (spec → decompose) ou endurecimento de código existente (review-quality em escopo completo → achados aprovados → decompose). Dali em diante, por sprint: execute-sprint em subagent isolado → verify-sprint como GATE → mini review, com checkpoint humano em cada fronteira, parada no vermelho e fechamento verificado. Fluxo de alto impacto e longa duração — roda apenas via \"/run-sprints\" explícito; as primitivas continuam auto-invocáveis avulsas. Agnóstica de domínio e tecnologia.",
       "homepage": "https://github.com/bruno-vferreira/bruno-skills",
       "id": "sdd/run-sprints",
       "keywords": [
@@ -228,6 +201,7 @@
         "verification",
         "workflow",
         "orchestration",
+        "subagents",
         "metodologia",
         "pt-br"
       ],
@@ -237,7 +211,7 @@
       "plugin": "sdd",
       "repository": "https://github.com/bruno-vferreira/bruno-skills",
       "source": "./plugins/sdd",
-      "version": "0.4.0"
+      "version": "0.5.0"
     },
     {
       "author": {
@@ -245,7 +219,7 @@
         "name": "Bruno Ferreira"
       },
       "category": "development",
-      "description": "Transforma requisitos brutos e conversacionais numa especificação estável: confirma o entendimento passo a passo, registra decisões com racional e caça lacunas antes de consolidar. Use quando o usuário começa a descrever um projeto, funcionalidade ou sistema novo; quer levantar ou organizar requisitos soltos; quer montar o escopo ou entender bem o problema antes de implementar; ou avisa que vai mandar os requisitos aos poucos — mesmo sem a palavra \"especificação\" (\"me ajuda a levantar os requisitos\", \"monta o escopo disso\"). Dispare também por \"/spec\". Não escreve código nem decompõe em sprints — isso é da `decompose`.",
+      "description": "Transforma requisitos brutos e conversacionais numa especificação estável, consolidada em arquivo (docs/sdd/): confirma o entendimento passo a passo, registra decisões com racional e caça lacunas antes de fechar. Use quando o usuário começa a descrever um projeto ou funcionalidade nova, quer levantar ou organizar requisitos, ou montar o escopo antes de implementar (\"me ajuda a levantar os requisitos\", \"monta o escopo disso\"). Não escreve código nem decompõe em sprints — isso é da `decompose`.",
       "homepage": "https://github.com/bruno-vferreira/bruno-skills",
       "id": "sdd/spec",
       "keywords": [
@@ -258,6 +232,7 @@
         "verification",
         "workflow",
         "orchestration",
+        "subagents",
         "metodologia",
         "pt-br"
       ],
@@ -267,7 +242,7 @@
       "plugin": "sdd",
       "repository": "https://github.com/bruno-vferreira/bruno-skills",
       "source": "./plugins/sdd",
-      "version": "0.4.0"
+      "version": "0.5.0"
     },
     {
       "author": {
@@ -275,7 +250,7 @@
         "name": "Bruno Ferreira"
       },
       "category": "development",
-      "description": "Gate de conformidade independente sobre um sprint entregue: confere se a entrega bate com o que o sprint DEFINIU — escopo cumprido, restrições respeitadas (nada de escopo futuro antecipado) e entregável de fato comprovado — e emite CONFORME / PARCIAL / NÃO CONFORME, bloqueando o avanço se a entrega desviou; na dúvida, reprova. Use ao terminar de implementar um sprint (ou fase/etapa de roadmap) e ANTES de fechá-lo ou commitá-lo, como portão automático no loop de sprints, ou quando pedirem \"o sprint fez o que prometeu?\", \"valida a entrega contra a definição\", \"posso fechar/commitar isto?\". Dispare também por \"/verify-sprint\". Não é code review (bugs/lógica são da `review-quality`) e não corrige — só julga aderência ao combinado, em qualquer domínio.",
+      "description": "Gate de conformidade independente sobre um sprint entregue: confere se a entrega bate com o que o sprint DEFINIU — escopo cumprido, restrições respeitadas (nada de escopo futuro antecipado) e entregável comprovado por re-execução — e emite CONFORME / PARCIAL / NÃO CONFORME, bloqueando o avanço se a entrega desviou; na dúvida, reprova. Use ao terminar de implementar um sprint (ou fase/etapa de roadmap) e ANTES de fechá-lo: \"o sprint fez o que prometeu?\", \"valida a entrega contra a definição\", \"posso fechar/commitar isto?\". Não é code review (bugs são da `review-quality`) e não corrige — só julga aderência ao definido, em qualquer domínio.",
       "homepage": "https://github.com/bruno-vferreira/bruno-skills",
       "id": "sdd/verify-sprint",
       "keywords": [
@@ -288,6 +263,7 @@
         "verification",
         "workflow",
         "orchestration",
+        "subagents",
         "metodologia",
         "pt-br"
       ],
@@ -297,7 +273,34 @@
       "plugin": "sdd",
       "repository": "https://github.com/bruno-vferreira/bruno-skills",
       "source": "./plugins/sdd",
-      "version": "0.4.0"
+      "version": "0.5.0"
+    },
+    {
+      "author": {
+        "email": "bvferreira@hotmail.com",
+        "name": "Bruno Ferreira"
+      },
+      "category": "meta",
+      "description": "Constrói um eval EXECUTÁVEL para uma skill e mede o ganho REAL dela sobre um baseline sem a skill: uma fixture pequena e auto-contida onde o defeito só aparece na REEXECUÇÃO independente (não na leitura do código), um oráculo escondido que pontua, e dois braços rodados e comparados (com a skill × sem). Use para endurecer, estressar, avaliar ou validar de verdade uma skill, medir o lift (\"a skill Z vale mesmo?\", \"melhora o resultado ou é só cerimônia?\") ou descobrir onde ela falha. Não cria a skill nem afina a descrição — complementa-a com a medição executável que ela não faz. Aplica-se a qualquer skill cuja saída seja verificável.",
+      "homepage": "https://github.com/bruno-vferreira/bruno-skills",
+      "id": "skill-lab/harden-skill",
+      "keywords": [
+        "skills",
+        "eval",
+        "lift",
+        "baseline",
+        "meta",
+        "harden",
+        "skill-testing",
+        "pt-br"
+      ],
+      "license": "MIT",
+      "name": "harden-skill",
+      "path": "./plugins/skill-lab/skills/harden-skill/SKILL.md",
+      "plugin": "skill-lab",
+      "repository": "https://github.com/bruno-vferreira/bruno-skills",
+      "source": "./plugins/skill-lab",
+      "version": "0.1.0"
     }
   ]
 }

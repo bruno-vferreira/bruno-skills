@@ -6,7 +6,7 @@
       "id": "trigger-roadmap-de-spec",
       "type": "trigger",
       "prompt": "monta o roadmap a partir dessa especificação (spec anexa)",
-      "expected": "Invoca a decompose. Lê a fonte inteira antes de cortar; emite índice com ordem justificada e um prompt por sprint com objetivo, escopo, restrições e entregável verificável."
+      "expected": "Invoca a decompose. Lê a fonte inteira antes de cortar; grava docs/sdd/sprints/ (00-plano.md com ordem justificada + um arquivo por sprint com Status:, objetivo, escopo, restrições e entregável verificável) e apresenta no chat só o índice."
     },
     {
       "id": "behavior-um-achado-um-sprint",

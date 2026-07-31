@@ -1,0 +1,23 @@
+{
+  "name": "skill-lab",
+  "displayName": "Skill Lab — medição executável de skills",
+  "description": "Constrói um eval EXECUTÁVEL para uma skill e mede o ganho REAL dela sobre um baseline sem a skill: uma fixture pequena e auto-contida onde o defeito só aparece na REEXECUÇÃO independente (não na leitura do código), um oráculo escondido que pontua, e dois braços rodados e comparados (com a skill × sem). Use para endurecer, estressar, avaliar ou validar de verdade uma skill, medir o lift (\"a skill Z vale mesmo?\", \"melhora o resultado ou é só cerimônia?\") ou descobrir onde ela falha. Não cria a skill nem afina a descrição — complementa-a com a medição executável que ela não faz. Aplica-se a qualquer skill cuja saída seja verificável.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Bruno Ferreira",
+    "email": "bvferreira@hotmail.com"
+  },
+  "homepage": "https://github.com/bruno-vferreira/bruno-skills",
+  "repository": "https://github.com/bruno-vferreira/bruno-skills",
+  "license": "MIT",
+  "keywords": [
+    "skills",
+    "eval",
+    "lift",
+    "baseline",
+    "meta",
+    "harden",
+    "skill-testing",
+    "pt-br"
+  ]
+}

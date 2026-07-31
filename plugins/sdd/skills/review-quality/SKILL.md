@@ -3,20 +3,20 @@ name: review-quality
 description: >-
   Audita código, configuração ou documentação em busca do que linters e validadores não pegam:
   divergências entre o contrato (schema, README, spec) e o comportamento real, bugs de lógica,
-  suposições não verificadas, inconsistências entre camadas. Produz um relatório de achados
-  priorizados por severidade — com cenário de falha concreto e correção sugerida — e registra
-  também o que está correto. O escopo é parâmetro: o diff de um sprint (mini review) ou o
-  repositório inteiro. Use sempre que o usuário pedir uma revisão, um code review, uma auditoria,
-  uma checagem de qualidade, ou perguntar "isto está correto? está bem-feito?" — e ao final de um
-  sprint, sobre o que acabou de ser implementado. Não corrige os achados nem verifica conformidade
-  ao sprint (isso é da `verify-sprint`) — julga qualidade, em qualquer domínio.
+  suposições não verificadas, inconsistências entre camadas. Produz relatório de achados
+  priorizados por severidade — com cenário de falha concreto e correção sugerida — e registra o
+  que está correto. O escopo é parâmetro: o diff de um sprint (mini review) ou o repositório
+  inteiro. Use quando pedirem uma revisão, um code review, uma auditoria ou "isto está correto?
+  está bem-feito?". Não corrige os achados nem verifica conformidade ao sprint (isso é da
+  `verify-sprint`) — julga qualidade, em qualquer domínio.
 argument-hint: "[escopo]"
 context: fork
+agent: sdd:reviewer
 background: false
 license: MIT
 metadata:
   author: Bruno Ferreira
-  version: "0.4.0"
+  version: "0.5.0"
 ---
 
 # review-quality
@@ -37,8 +37,9 @@ inteiro. Procedimento igual; muda a abrangência.
 ## Por que roda em subagent
 
 Uma revisão lê muitos arquivos e gera muito conteúdo intermediário descartável — só o relatório
-final interessa. Por isso esta skill roda em **subagent isolado** (`context: fork` no frontmatter):
-a conversa principal recebe apenas o relatório. Consequência: o subagent não vê o histórico da
+final interessa. Por isso esta skill roda em **subagent isolado** (`context: fork`), no container
+`sdd:reviewer` — **sem Write/Edit por construção**: quem encontra não conserta; achado vira sprint.
+A conversa principal recebe apenas o relatório. Consequência: o subagent não vê o histórico da
 conversa — o escopo e o contexto necessários chegam na invocação.
 
 ## Pré-condições
@@ -92,13 +93,18 @@ com trade-offs em vez de decidir sozinho.
 é elogio, é proteção contra "consertar" algo que já funciona de propósito. Também obriga a não
 inventar problema onde não há: se o código está correto, o relatório correto é curto.
 
-**7. Achado fora do escopo delimitado vai para `TECH_DEBT.md`, não para o relatório principal.**
-Num mini review (escopo = diff de um sprint), é comum notar algo relevante em código **adjacente**
-ao diff, mas fora dele — não é o que este review foi pedido para julgar, e listá-lo junto ao
-relatório do sprint mistura dois assuntos. Registre em `TECH_DEBT.md` na raiz do projeto (a partir
-de [`assets/tech-debt-template.md`](assets/tech-debt-template.md) se não existir) com origem
-"achado incidental de review", em vez de expandir o relatório para algo que não foi pedido ou
-descartar a observação.
+**7. Achado fora do escopo delimitado vai para o backlog, não para o relatório principal.** Num
+mini review (escopo = diff de um sprint), é comum notar algo relevante em código **adjacente** ao
+diff, mas fora dele — não é o que este review foi pedido para julgar, e listá-lo junto ao relatório
+do sprint mistura dois assuntos. Registre com uma chamada (o script cria o `TECH_DEBT.md` se não
+existir) — a única escrita que este review faz:
+
+```bash
+python3 "${CLAUDE_PLUGIN_ROOT}/scripts/tech_debt.py" add \
+  --item "<o problema, objetivo>" --onde "<arquivo/módulo>" \
+  --motivo "achado incidental de review" --origem "review de <data>" \
+  --severidade <alta|media|baixa> --escopo <pontual|amplo>
+```
 
 **8. Emitir o relatório.** Em subagent, retorne como resumo estruturado ao contexto principal.
 

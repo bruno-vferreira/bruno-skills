@@ -16,9 +16,16 @@
     {
       "name": "sdd",
       "source": "./plugins/sdd",
-      "description": "SDD (Spec-Driven Development / método de sprints) para Claude Code: especificar → decompor → executar com verificação → revisar. Skills genéricas (agnósticas de tecnologia) que encodam contrato antes de implementação, fatias pequenas e verificáveis, prova em vez de sensação e parar no vermelho. Inclui as primitivas spec, decompose e execute-sprint; os gates independentes verify-sprint (conformidade) e review-quality (qualidade), ambos em subagent isolado; o fluxo manual de orquestração run-sprints (do zero, via spec, ou sobre código existente, via review-quality); e a skill de medição executável harden-skill, que constrói um eval e mede o ganho real de uma skill sobre um baseline.",
+      "description": "SDD (Spec-Driven Development / método de sprints) para Claude Code, com estado persistido em docs/sdd/ e backlog em TECH_DEBT.md: especificar → decompor → executar com verificação → revisar. Seis skills agnósticas de tecnologia — spec, decompose e execute-sprint; os gates verify-sprint (conformidade) e review-quality (qualidade), forks em containers de agent sem poder de edição; e a orquestração manual run-sprints, que roda cada sprint em subagent isolado (sprint-executor) com checkpoint humano e parada no vermelho. Scripts determinísticos (tech_debt.py, sdd_status.py) mantêm o backlog e o painel do ciclo fora do custo de tokens do modelo.",
       "category": "development",
-      "keywords": ["sprints", "spec", "spec-driven-development", "sdd", "decompose", "code-review", "verification", "workflow", "orchestration", "metodologia", "pt-br"]
+      "keywords": ["sprints", "spec", "spec-driven-development", "sdd", "decompose", "code-review", "verification", "workflow", "orchestration", "subagents", "metodologia", "pt-br"]
+    },
+    {
+      "name": "skill-lab",
+      "source": "./plugins/skill-lab",
+      "description": "Constrói um eval EXECUTÁVEL para uma skill e mede o ganho REAL dela sobre um baseline sem a skill: uma fixture pequena e auto-contida onde o defeito só aparece na REEXECUÇÃO independente (não na leitura do código), um oráculo escondido que pontua, e dois braços rodados e comparados (com a skill × sem). Use para endurecer, estressar, avaliar ou validar de verdade uma skill, medir o lift (\"a skill Z vale mesmo?\", \"melhora o resultado ou é só cerimônia?\") ou descobrir onde ela falha. Não cria a skill nem afina a descrição — complementa-a com a medição executável que ela não faz. Aplica-se a qualquer skill cuja saída seja verificável.",
+      "category": "meta",
+      "keywords": ["skills", "eval", "lift", "baseline", "meta", "harden", "skill-testing", "pt-br"]
     },
     {
       "name": "plaud",
