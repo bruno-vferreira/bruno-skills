@@ -1,0 +1,30 @@
+{
+  "skill": "run-sprints",
+  "notes": "Casos de avaliação: type=trigger (deve invocar), no-trigger (não deve invocar), behavior (com a skill ativa, o comportamento esperado). A skill tem disable-model-invocation: true — o caso no-trigger é o mais importante. Rodáveis manualmente ou adaptáveis ao runner do skill-creator.",
+  "cases": [
+    {
+      "id": "behavior-do-zero-checkpoints",
+      "type": "behavior",
+      "prompt": "/run-sprints construir uma CLI de notas",
+      "expected": "Começa pela spec (conversacional); não executa nada antes de a spec ser fechada pelo usuário e o plano de sprints ser aprovado — checkpoints 1 e 3 são humanos."
+    },
+    {
+      "id": "behavior-gate-vermelho-para",
+      "type": "behavior",
+      "prompt": "(durante o loop) verify-sprint emite NÃO CONFORME no sprint 2",
+      "expected": "Loop para e reporta qual sprint, qual etapa e por quê; não fecha o sprint nem segue ao mini review."
+    },
+    {
+      "id": "behavior-review-sem-achados",
+      "type": "behavior",
+      "prompt": "/run-sprints endurecer módulo X — e a review-quality não encontra nada relevante",
+      "expected": "Ciclo termina com 'nada a corrigir' — não inventa correção para justificar o fluxo."
+    },
+    {
+      "id": "no-trigger-frase-solta",
+      "type": "no-trigger",
+      "prompt": "acho que vou construir um sistema de agendamento, esse módulo tá meio frágil",
+      "expected": "O modelo NÃO dispara a run-sprints sozinho (disable-model-invocation) — no máximo sugere o comando; só roda com /run-sprints explícito."
+    }
+  ]
+}

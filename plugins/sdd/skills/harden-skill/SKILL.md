@@ -1,20 +1,19 @@
 ---
 name: harden-skill
 description: >-
-  Constrói um eval EXECUTÁVEL para uma skill (do método de sprints ou outra) e mede o ganho REAL dela
-  sobre um baseline sem a skill — para evoluí-la com base em evidência, não em intuição. A ideia
-  central: uma fixture pequena e auto-contida onde o defeito só aparece na REEXECUÇÃO independente (não
-  na leitura do código), um oráculo escondido que pontua, e dois braços (com a skill × sem) rodados e
-  comparados. Use quando quiser endurecer, estressar, avaliar ou validar de verdade uma skill, medir se
-  ela adiciona valor, ou descobrir onde ela falha. Dispare por "/harden-skill", "criar um eval
-  executável para a skill X", "medir o lift da skill Y", "a skill Z vale mesmo?", "estressar/endurecer a
-  skill", "essa skill melhora o resultado ou é só cerimônia?". NÃO cria a skill nem afina a descrição
-  (isso é da skill-creator) — complementa-a com a medição executável que ela não faz. Aplica-se a
-  qualquer skill cuja saída seja verificável.
+  Constrói um eval EXECUTÁVEL para uma skill e mede o ganho REAL dela sobre um baseline sem a
+  skill: uma fixture pequena e auto-contida onde o defeito só aparece na REEXECUÇÃO independente
+  (não na leitura do código), um oráculo escondido que pontua, e dois braços rodados e comparados
+  (com a skill × sem). Use para endurecer, estressar, avaliar ou validar de verdade uma skill,
+  medir o lift ("a skill Z vale mesmo?", "melhora o resultado ou é só cerimônia?") ou descobrir
+  onde ela falha. Dispare também por "/harden-skill". Não cria a skill nem afina a descrição (isso
+  é de uma skill criadora de skills, como a skill-creator) — complementa-a com a medição executável
+  que ela não faz. Aplica-se a qualquer skill cuja saída seja verificável.
+argument-hint: "[skill-alvo]"
 license: MIT
 metadata:
   author: Bruno Ferreira
-  version: "0.2.0"
+  version: "0.4.0"
 ---
 
 # harden-skill
@@ -88,9 +87,9 @@ re-executar em vez de raciocinar) ou o valor não está ali. Escreva a melhoria 
 # Harden — <skill> · propriedade: <a hipótese discriminante>
 **Instrumento validado:** correto <n/n> · bugado <0/n>   (oráculo discrimina)
 
-| fixture | baseline (haiku/opus) | tratamento (haiku/opus) | lift |
-|---------|-----------------------|-------------------------|------|
-| <nome>  | recall x/n · prec y/m | recall x/n · prec y/m   | +Δ   |
+| fixture | baseline (modelo fraco/forte) | tratamento (modelo fraco/forte) | lift |
+|---------|-------------------------------|---------------------------------|------|
+| <nome>  | recall x/n · prec y/m         | recall x/n · prec y/m           | +Δ   |
 
 ## Leitura
 - Onde a skill ganhou / onde empatou com o baseline / onde o modelo já bastava.
@@ -114,8 +113,8 @@ Exemplo de relatório final (com × sem a skill, com veredito) em
 
 ## Fronteiras
 
-- Não cria a skill nem afina descrição/gatilho — isso é `skill-creator`. Complementa: a medição
-  executável que ela não faz.
+- Não cria a skill nem afina descrição/gatilho — isso é de uma skill criadora de skills
+  (`skill-creator`, quando disponível). Complementa: a medição executável que ela não faz.
 - Não corrige a skill sozinha — mede, aponta a falha, propõe melhoria; aplicar é edição (ou sprint
   via `execute-sprint`).
 - Não substitui o eval de gatilho — o padrão (a descrição dispara no prompt certo) continua

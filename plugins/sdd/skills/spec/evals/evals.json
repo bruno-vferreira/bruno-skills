@@ -1,0 +1,36 @@
+{
+  "skill": "spec",
+  "notes": "Casos de avaliação: type=trigger (deve invocar), no-trigger (não deve invocar), behavior (com a skill ativa, o comportamento esperado). Rodáveis manualmente ou adaptáveis ao runner do skill-creator.",
+  "cases": [
+    {
+      "id": "trigger-requisitos-soltos",
+      "type": "trigger",
+      "prompt": "quero construir um app de controle de despesas pessoais, me ajuda a levantar os requisitos",
+      "expected": "Invoca a spec. Não despeja uma especificação completa: anota o que foi dito, confirma, e pergunta o que falta."
+    },
+    {
+      "id": "behavior-incremental-aberta",
+      "type": "behavior",
+      "prompt": "vou te mandando os requisitos aos poucos, começa com: o app importa um CSV do banco",
+      "expected": "Registra o requisito ('anotado: ...') e mantém a spec aberta — não declara pronto nem consolida até o usuário sinalizar fechamento."
+    },
+    {
+      "id": "behavior-default-registrado",
+      "type": "behavior",
+      "prompt": "(durante uma spec) — tanto faz o formato do arquivo de saída, decide você",
+      "expected": "Assume um default sensato e o registra explicitamente como decisão com racional e origem 'default assumido' — nenhuma escolha invisível."
+    },
+    {
+      "id": "behavior-caca-lacunas",
+      "type": "behavior",
+      "prompt": "(spec de um sistema de reservas com estoque) usuário diz que cobriu tudo",
+      "expected": "Antes de consolidar, checa obrigações universais (concorrência/oversell, integridade, conservação de estoque) e transforma cada lacuna em pergunta ou default registrado."
+    },
+    {
+      "id": "no-trigger-correcao",
+      "type": "no-trigger",
+      "prompt": "conserta esse bug no parser de datas",
+      "expected": "Não invoca a spec — é trabalho de correção direta, não levantamento de requisitos."
+    }
+  ]
+}

@@ -22,12 +22,12 @@ browsable site later.
 │   │   └── skills/
 │   │       └── commit-message/
 │   │           └── SKILL.md     # the skill itself (Agent Skills format)
-│   ├── sdd/                     # a multi-skill plugin (8 spec-driven-development skills)
+│   ├── sdd/                     # a multi-skill plugin (7 spec-driven-development skills)
 │   │   ├── .claude-plugin/
 │   │   │   └── plugin.json
 │   │   └── skills/
 │   │       └── <spec, decompose, execute-sprint, verify-sprint, review,
-│   │           review-and-fix, build-project, harden-skill>/SKILL.md (+ assets/)
+│   │           run-sprints, harden-skill>/SKILL.md (+ assets/)
 │   └── plaud/                   # a 2-skill plugin (Plaud MCP → local markdown + audio)
 │       ├── .claude-plugin/
 │       │   └── plugin.json
@@ -63,10 +63,11 @@ The catalog currently holds three plugins:
 
 - **`commit-message`** — a single skill that writes a
   [Conventional Commits](https://www.conventionalcommits.org) message from the staged git diff.
-- **`sdd`** — Spec-Driven Development: an 8-skill methodology (spec → decompose → execute →
-  verify → review), the `build-project` and `review-and-fix` orchestrators, and the
-  `harden-skill` eval builder. Once installed, its commands are namespaced as
-  `/sdd:<skill>` (e.g. `/sdd:build-project`); the skills also trigger from natural language.
+- **`sdd`** — Spec-Driven Development: a 7-skill methodology (spec → decompose → execute →
+  verify → review), the `run-sprints` orchestrator (entry point via `spec`, from scratch, or via
+  `review-quality`, hardening existing code), and the `harden-skill` eval builder. Once installed, its
+  commands are namespaced as `/sdd:<skill>` (e.g. `/sdd:run-sprints`); the skills also trigger from
+  natural language.
 - **`plaud`** — syncs your [Plaud](https://www.plaud.ai) recordings to disk via the Plaud MCP:
   each recording becomes a markdown note (frontmatter + summary + topics + transcript) plus its
   `audio.mp3` (when the recording has audio), tracked by a checkpoint in `.plaud/`. Two skills — `sync` (incremental) and

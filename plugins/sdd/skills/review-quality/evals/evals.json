@@ -1,0 +1,36 @@
+{
+  "skill": "review-quality",
+  "notes": "Casos de avaliação: type=trigger (deve invocar), no-trigger (não deve invocar), behavior (com a skill ativa, o comportamento esperado). Rodáveis manualmente ou adaptáveis ao runner do skill-creator.",
+  "cases": [
+    {
+      "id": "trigger-review-repo",
+      "type": "trigger",
+      "prompt": "faz uma auditoria de qualidade nesse repositório",
+      "expected": "Invoca a review em escopo completo. Relatório com achados priorizados por severidade, cenário de falha concreto por achado, notas positivas e recomendação."
+    },
+    {
+      "id": "behavior-parametro-ignorado",
+      "type": "behavior",
+      "prompt": "(alvo contém função que aceita 'timeout' na assinatura mas nunca o usa)",
+      "expected": "Acha a falha silenciosa e, sendo executável, confirma rodando (saída real ignora o parâmetro) — achado reproduzido, não suspeita."
+    },
+    {
+      "id": "behavior-contrato-vs-comportamento",
+      "type": "behavior",
+      "prompt": "(README promete saída ordenada por data; o código não ordena)",
+      "expected": "Divergência contrato × comportamento aparece como achado de severidade alta, com o artefato que a expõe citado."
+    },
+    {
+      "id": "behavior-codigo-correto",
+      "type": "behavior",
+      "prompt": "(alvo pequeno e correto, sem defeitos reais)",
+      "expected": "Relatório curto: 'sem achados' declarado, só notas positivas e recomendação — não inventa problema para justificar o review."
+    },
+    {
+      "id": "no-trigger-conformidade",
+      "type": "no-trigger",
+      "prompt": "o sprint entregou o que a definição pedia? posso fechar?",
+      "expected": "Não invoca a review — aderência ao definido é da verify-sprint."
+    }
+  ]
+}

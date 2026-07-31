@@ -1,3 +1,5 @@
+<!-- Manutenção do plugin sdd: este template existe em execute-sprint/assets e review-quality/assets —
+     mantenha as duas cópias idênticas. Não copie este comentário para o TECH_DEBT.md do projeto. -->
 # Débito Técnico
 
 Backlog de itens fora do escopo do trabalho em andamento no momento em que foram encontrados —
@@ -23,8 +25,9 @@ suficiente para uma sessão futura sem memória desta decidir se vale virar spri
   próxima vez que alguém mexer naquele arquivo por qualquer motivo; **amplo** (mexe em muitos
   arquivos/classes) é candidato a **sprint dedicado** de refatoração, nunca corrigido de
   passagem dentro de outro sprint.
-- Itens **resolvidos** não são apagados — marque `~~riscado~~` com a referência do sprint/commit
-  que resolveu, para o backlog também servir de histórico do que já foi endurecido.
+- Itens **resolvidos** saem de "Itens abertos" e entram na tabela "Itens resolvidos", com a
+  referência do sprint/commit que resolveu — assim o backlog também serve de histórico do que já
+  foi endurecido.
 
 ## Itens abertos
 
